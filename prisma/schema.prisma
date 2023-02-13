@@ -6,12 +6,69 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+enum Status {
+    ATTENDING
+    NOTATTENDING
+    NORESPONSE
+}
+
+model Venue {
+    id      String  @id @default(cuid())
+    name    String
+    address String
+    Event   Event[]
+}
+
+model Event {
+    id          String            @id @default(cuid())
+    name        String
+    date        DateTime
+    venue       Venue             @relation(fields: [venueId], references: [id])
+    venueId     String
+    dressCode   String
+    invitations EventInvitation[]
+
+    @@index([venueId])
+}
+
+model Invitation {
+    id          String            @id @default(cuid())
+    addressedTo String
+    guests      GuestInvite[]
+    eventId     String
+    events      EventInvitation[]
+}
+
+model EventInvitation {
+    event        Event      @relation(fields: [eventId], references: [id])
+    invitation   Invitation @relation(fields: [invitationId], references: [id])
+    eventId      String
+    invitationId String
+
+    @@id([eventId, invitationId])
+    @@index([invitationId])
+    @@index([eventId])
+}
+
+model Guest {
+    id      String        @id @default(cuid())
+    name    String
+    invites GuestInvite[]
+}
+
+model GuestInvite {
+    Group   Invitation @relation(fields: [groupId], references: [id])
+    Guest   Guest      @relation(fields: [guestId], references: [id])
+    guestId String
+    groupId String
+    status  Status     @default(NORESPONSE)
+
+    @@id([guestId, groupId])
+    @@index([groupId])
+    @@index([guestId])
 }
