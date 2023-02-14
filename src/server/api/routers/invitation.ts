@@ -6,9 +6,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 export const invitationRouter = createTRPCRouter({
   create: publicProcedure
     .input(z.object({
-        addressedTo: z.string(),
-        events: z.array(z.string()),
-        guests: z.array(z.string())
+      addressedTo: z.string(),
+      events: z.array(z.string()),
+      guests: z.array(z.object({name: z.string()}))
     }))  
   .mutation(({ ctx, input}) => {
     return ctx.prisma.invitation.create({
@@ -18,15 +18,40 @@ export const invitationRouter = createTRPCRouter({
                 connect: input.events.map(eventId => ({id: eventId}))
             },
             guests: {
-                create: input.guests.map(guest => ({ name: guest}))
+                create: input.guests.map(guest => ({ name: guest.name}))
             }
         }
     })
   }),
+  update: publicProcedure
+    .input(z.object({
+        id: z.string(),
+        addressedTo: z.string(),
+        events: z.array(z.string()),
+        guests: z.array(z.object({name: z.string()}))
+    }))  
+  .mutation(({ ctx, input}) => {    
+    return ctx.prisma.invitation.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        addressedTo: input.addressedTo,
+        events: {
+          set: [],
+          connect: input.events.map(eventId => ({id: eventId}))
+        },
+        guests: {
+          deleteMany: {},
+          create: input.guests.map(guest => ({name: guest.name}))
+        }
+      }
+    });
+  }),
   get: publicProcedure
     .input(z.string())
     .query(async ({ctx, input}) => {
-      const invite = await ctx.prisma.invitation.findUnique({
+      const invitation = await ctx.prisma.invitation.findUnique({
         where: {
           id: input
         },
@@ -45,14 +70,10 @@ export const invitationRouter = createTRPCRouter({
         }
       });
 
-      if (!invite) throw new TRPCError({code: "NOT_FOUND"})
-
-      console.log(invite);
-
+      if (!invitation) throw new TRPCError({code: "NOT_FOUND"});
       return {
-        addressedTo: invite.addressedTo,
-        guests: invite.guests.map(guest => guest.name),
-        events: invite.events.map(event => event.id)
+        ...invitation,
+        events: invitation.events.map(event => event.id)
       };
     })
 });
