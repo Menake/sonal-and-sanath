@@ -25,50 +25,30 @@ model Venue {
 }
 
 model Event {
-    id          String            @id @default(cuid())
+    id          String       @id @default(cuid())
     name        String
     date        DateTime
-    venue       Venue             @relation(fields: [venueId], references: [id])
+    venue       Venue        @relation(fields: [venueId], references: [id])
     venueId     String
     dressCode   String
-    invitations EventInvitation[]
+    invitations Invitation[]
 
     @@index([venueId])
 }
 
 model Invitation {
-    id          String            @id @default(cuid())
+    id          String  @id @default(cuid())
     addressedTo String
-    guests      GuestInvite[]
-    eventId     String
-    events      EventInvitation[]
-}
-
-model EventInvitation {
-    event        Event      @relation(fields: [eventId], references: [id])
-    invitation   Invitation @relation(fields: [invitationId], references: [id])
-    eventId      String
-    invitationId String
-
-    @@id([eventId, invitationId])
-    @@index([invitationId])
-    @@index([eventId])
+    events      Event[]
+    guests      Guest[]
 }
 
 model Guest {
-    id      String        @id @default(cuid())
-    name    String
-    invites GuestInvite[]
-}
+    id           String     @id @default(cuid())
+    name         String
+    status       Status     @default(NORESPONSE)
+    invitation   Invitation @relation(fields: [invitationId], references: [id])
+    invitationId String
 
-model GuestInvite {
-    Group   Invitation @relation(fields: [groupId], references: [id])
-    Guest   Guest      @relation(fields: [guestId], references: [id])
-    guestId String
-    groupId String
-    status  Status     @default(NORESPONSE)
-
-    @@id([guestId, groupId])
-    @@index([groupId])
-    @@index([guestId])
+    @@index([invitationId])
 }
