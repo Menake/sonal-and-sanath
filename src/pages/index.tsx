@@ -15,7 +15,7 @@ const Home: NextPage = () => {
         </div>
         <div className="flex flex-row justify-end text-right sm:flex-none">
           <div className="text-right text-5xl uppercase text-stone-100 sm:text-center">
-            & Sanath
+            <span className="text-opacity-40">&</span> Sanath
           </div>
         </div>
       </div>

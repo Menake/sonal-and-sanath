@@ -19,7 +19,11 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "../db";
 
-type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  invitationId?: string,
+  req: NextApiRequest,
+  res: NextApiResponse
+}
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use
@@ -34,6 +38,9 @@ type CreateContextOptions = Record<string, never>;
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
     prisma,
+    invitationId: _opts.invitationId,
+    req: _opts.req,
+    res: _opts.res
   };
 };
 
@@ -44,7 +51,11 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+  const {req, res} = _opts;
+  
+  const invitationId = req.cookies["invitationId"];
+
+  return createInnerTRPCContext({ invitationId, req, res });
 };
 
 /**
@@ -53,8 +64,9 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  * This is where the tRPC API is initialized, connecting the context and
  * transformer.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -62,6 +74,16 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
     return shape;
   },
 });
+
+const isAuthed = t.middleware(({ctx, next}) => {
+  if (!ctx.invitationId) throw new TRPCError({code: "UNAUTHORIZED"});
+
+  return next({
+    ctx: {
+      invitation: ctx.invitationId,
+    }
+  })
+})
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -85,3 +107,4 @@ export const createTRPCRouter = t.router;
  * can still access user session data if they are logged in.
  */
 export const publicProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(isAuthed);

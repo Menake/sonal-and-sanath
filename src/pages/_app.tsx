@@ -33,7 +33,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
           className={`min-w-screen flex min-h-screen flex-col items-center justify-center bg-[#8A9587] px-5 ${baskervville.variable}`}
         >
           <Navbar />
-          <div className="flex w-full flex-1 pt-3">{page}</div>
+          <div className="z-10 flex w-full flex-1 pt-3">{page}</div>
         </main>
       );
     });

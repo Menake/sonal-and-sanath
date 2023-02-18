@@ -10,9 +10,11 @@ const sidebar = {
     transition: {
       duration: 0.6,
     },
+    zIndex: 20,
   },
   closed: {
     clipPath: "circle(15% at 100% 0%)",
+    zIndex: 0,
     transition: {
       delay: 0.5,
       duration: 0.3,
@@ -27,7 +29,7 @@ export const Navbar = () => {
     <div className="h-16 w-full pt-3">
       <div className="flex flex-row items-center justify-between">
         <Link href="/" className="flex items-center">
-          <div className="z-2 flex flex-row text-2xl font-light text-white">
+          <div className="z-10 flex flex-row text-2xl font-light text-stone-200">
             <span>Sonal</span>
             <div className="relative z-0 mt-2 -ml-0.5 text-3xl font-light opacity-40">
               &
