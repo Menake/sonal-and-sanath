@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { useRouter } from "next/router";
 import { FormProvider, useFormContext } from "react-hook-form";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { RouterOutputs } from "../utils/api";
@@ -13,6 +14,8 @@ export function InvitationForm({
   data: Invitation;
   onSubmit: (data: Invitation) => void;
 }) {
+  const router = useRouter();
+
   const { data: events, isLoading } = api.events.all.useQuery();
 
   const methods = useForm({
@@ -44,14 +47,14 @@ export function InvitationForm({
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mt-8 flex w-full flex-1 flex-col"
+          className="mt-8 flex w-full flex-1 flex-col pb-8"
         >
           <label className="mt-3 text-[#8A9587] sm:flex sm:flex-col">
             Addressed To
             <input
               defaultValue={data.addressedTo}
               {...register("addressedTo")}
-              className="mt-2 w-full rounded-md border bg-[#8A9587] bg-opacity-20 py-1.5 px-3 text-[#8A9587]"
+              className="mt-2 w-full rounded-md border bg-[#8A9587] bg-opacity-20 py-1.5 px-3 text-[#8A9587] focus:outline-[#8A9587]"
             />
           </label>
 
@@ -119,6 +122,14 @@ export function InvitationForm({
           >
             Submit
           </button>
+
+          <button
+            className="mt-2 rounded bg-[#8A9587] bg-opacity-10 py-2 text-[#8A9587]"
+            type="button"
+            onClick={() => router.back()}
+          >
+            Cancel
+          </button>
         </form>
       </FormProvider>
     </div>
@@ -140,7 +151,7 @@ const GuestRow = ({
   return (
     <div className="my-4 flex flex-row items-center">
       <input
-        className="mt-2 w-full rounded-md border bg-[#8A9587] bg-opacity-20 py-1.5 px-3 text-[#8A9587]"
+        className="mt-2 w-full rounded-md border bg-[#8A9587] bg-opacity-20 py-1.5 px-3 text-[#8A9587] focus:outline-[#8A9587]"
         type="text"
         defaultValue={guest.name}
         {...register(`guests.${index}.name`)}

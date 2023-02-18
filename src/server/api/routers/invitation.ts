@@ -75,5 +75,39 @@ export const invitationRouter = createTRPCRouter({
         ...invitation,
         events: invitation.events.map(event => event.id)
       };
+    }),
+  all: publicProcedure
+    .query(async ({ctx}) => {
+      const invitations = await  ctx.prisma.invitation.findMany(
+        {
+          select: {
+            id: true,
+            addressedTo: true,
+            guests: {
+              select: {
+                name: true
+              }
+            },
+            events: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+      );
+
+      const events = await ctx.prisma.event.findMany({
+        select: {
+          id: true,
+          name: true
+        }
+      })
+
+      return {
+        invitations,
+        events
+      }
     })
 });

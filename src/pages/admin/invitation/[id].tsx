@@ -18,8 +18,17 @@ export default function Invitation() {
 }
 
 function InvitationFormWrapper({ invitationId }: { invitationId: string }) {
+  const router = useRouter();
+
+  const utils = api.useContext();
+
   const { data } = api.invitation.get.useQuery(invitationId);
-  const { mutate } = api.invitation.update.useMutation();
+  const { mutate } = api.invitation.update.useMutation({
+    async onSuccess(input) {
+      await utils.invitation.get.invalidate(input.id);
+      await router.push("/admin");
+    },
+  });
 
   if (data) {
     return (

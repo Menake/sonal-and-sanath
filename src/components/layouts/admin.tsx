@@ -1,9 +1,9 @@
-import { Arimo } from "@next/font/google";
-import type { ReactElement } from "react";
+import { Open_Sans } from "@next/font/google";
 
-const arimo = Arimo({
+const openSans = Open_Sans({
   subsets: ["latin"],
-  variable: "--font-arimo",
+  variable: "--font-openSans",
+  weight: ["300", "400", "500"],
 });
 
 export default function AdminLayout({
@@ -21,7 +21,7 @@ export default function AdminLayout({
         <div className="-ml-0.5 mt-5">Sanath</div>
       </div>
       <div
-        className={` ${arimo.variable} flex w-full flex-col px-3 font-arimo sm:items-center`}
+        className={` ${openSans.variable} flex w-full flex-col px-3 font-openSans sm:items-center`}
       >
         {children}
       </div>

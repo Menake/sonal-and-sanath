@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 import { InvitationForm } from "../../../components/invitationForm";
 import AdminLayout from "../../../components/layouts/admin";
@@ -7,7 +8,13 @@ import { api } from "../../../utils/api";
 type Invitation = RouterOutputs["invitation"]["get"];
 
 export default function CreateInvitation() {
-  const { mutate } = api.invitation.create.useMutation();
+  const router = useRouter();
+
+  const { mutate } = api.invitation.create.useMutation({
+    async onSuccess(data, variables, context) {
+      await router.push("/admin");
+    },
+  });
 
   const defaultData: Invitation = {
     addressedTo: "",
