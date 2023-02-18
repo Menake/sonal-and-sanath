@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 import { useState } from "react";
 import AdminLayout from "../../components/layouts/admin";
+import { Loader } from "../../components/loader";
 import type { RouterOutputs } from "../../utils/api";
 import { api } from "../../utils/api";
 
@@ -26,11 +27,11 @@ const InvitationList = ({ invitations }: { invitations: Invitation[] }) => {
         >
           <div className="flex flex-row justify-between text-sm font-thin text-[#8A9587]">
             <p>Addressed To</p>
-            <p className="opacity-50">{invitation.addressedTo}</p>
+            <p className="opacity-80">{invitation.addressedTo}</p>
           </div>
           <div className="mt-4 flex flex-row items-center justify-between text-sm font-thin text-[#8A9587] ">
             <p className="flex-1">Events</p>
-            <p className="w-3/4 text-right opacity-50">
+            <p className="w-3/4 text-right opacity-80">
               {invitation.events.map((event) => event.name).join(", ")}
             </p>
           </div>
@@ -75,13 +76,17 @@ export default function AdminPage() {
   });
 
   if (isLoading)
-    return <p className="text-center font-thin text-[#8A9587]">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full flex-row items-center justify-between">
         <input
-          className="w-4/5 rounded bg-[#8A9587] bg-opacity-20 px-3 py-2 font-thin text-[#8A9587] text-opacity-50 placeholder-[#8A9587] placeholder-opacity-50 focus:outline-[#8A9587]"
+          className="w-4/5 rounded bg-[#8A9587] bg-opacity-20 px-3 py-2 font-thin text-[#8A9587] text-opacity-80 placeholder-[#8A9587] placeholder-opacity-80 focus:outline-[#8A9587]"
           type="text"
           placeholder="Search for invites"
           onChange={(e) => setSearch(e.target.value)}
@@ -117,7 +122,7 @@ export default function AdminPage() {
             } ${
               eventFilters.has(event.id)
                 ? "text-white"
-                : "bg-opacity-20 text-[#8A9587] text-opacity-50"
+                : "bg-opacity-20 text-[#8A9587] text-opacity-80"
             }`}
             key={event.id}
             onClick={() => {

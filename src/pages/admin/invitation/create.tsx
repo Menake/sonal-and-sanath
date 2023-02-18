@@ -10,8 +10,8 @@ type Invitation = RouterOutputs["invitation"]["get"];
 export default function CreateInvitation() {
   const router = useRouter();
 
-  const { mutate } = api.invitation.create.useMutation({
-    async onSuccess(data, variables, context) {
+  const { mutate, isLoading } = api.invitation.create.useMutation({
+    async onSuccess() {
       await router.push("/admin");
     },
   });
@@ -23,7 +23,11 @@ export default function CreateInvitation() {
   };
 
   return (
-    <InvitationForm data={defaultData} onSubmit={(data) => mutate(data)} />
+    <InvitationForm
+      data={defaultData}
+      onSubmit={(data) => mutate(data)}
+      submitting={isLoading}
+    />
   );
 }
 

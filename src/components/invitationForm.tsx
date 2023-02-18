@@ -4,15 +4,18 @@ import { FormProvider, useFormContext } from "react-hook-form";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { RouterOutputs } from "../utils/api";
 import { api } from "../utils/api";
+import { Loader } from "./loader";
 
 type Invitation = RouterOutputs["invitation"]["get"];
 
 export function InvitationForm({
   data,
   onSubmit,
+  submitting,
 }: {
   data: Invitation;
   onSubmit: (data: Invitation) => void;
+  submitting: boolean;
 }) {
   const router = useRouter();
 
@@ -30,10 +33,10 @@ export function InvitationForm({
     keyName: "name",
   });
 
-  if (isLoading)
+  if (isLoading || submitting)
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center">
-        <p>Loading...</p>
+      <div className="flex h-full items-center justify-center">
+        <Loader />
       </div>
     );
 

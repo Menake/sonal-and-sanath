@@ -11,6 +11,10 @@ module.exports = {
         openSans: ["var(--font-openSans)", ...fontFamily.sans],
         sans: ["var(--font-baskervville)", ...fontFamily.sans],
       },
+      animation: {
+        bounce200: "bounce 1s infinite 200ms",
+        bounce400: "bounce 1s infinite 400ms",
+      },
     },
   },
   plugins: [],
