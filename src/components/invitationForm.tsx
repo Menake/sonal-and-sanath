@@ -2,11 +2,11 @@
 import { useRouter } from "next/router";
 import { FormProvider, useFormContext } from "react-hook-form";
 import { useFieldArray, useForm } from "react-hook-form";
-import type { RouterOutputs } from "../utils/api";
+import type { RouterInputs, RouterOutputs } from "../utils/api";
 import { api } from "../utils/api";
 import { Loader } from "./loader";
 
-type Invitation = RouterOutputs["invitation"]["get"];
+type Invitation = RouterInputs["invitation"]["create"];
 
 export function InvitationForm({
   data,

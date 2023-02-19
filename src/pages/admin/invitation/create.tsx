@@ -2,10 +2,10 @@ import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 import { InvitationForm } from "../../../components/invitationForm";
 import AdminLayout from "../../../components/layouts/admin";
-import type { RouterOutputs } from "../../../utils/api";
+import type { RouterInputs, RouterOutputs } from "../../../utils/api";
 import { api } from "../../../utils/api";
 
-type Invitation = RouterOutputs["invitation"]["get"];
+type Invitation = RouterInputs["invitation"]["create"];
 
 export default function CreateInvitation() {
   const router = useRouter();
