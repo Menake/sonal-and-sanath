@@ -33,9 +33,10 @@ export function middleware(request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.match(/\/(login).*/) && session) {
-        const homeUrl = request.nextUrl.clone();
-        homeUrl.href = "/";
-        return NextResponse.redirect(homeUrl, 307);
+        const url = new URL("/", request.url);
+        console.log(`Session found, redirecting to: ${url.toString()}`);
+
+        return NextResponse.redirect(url, 307);
     }
 
     return NextResponse.next();
