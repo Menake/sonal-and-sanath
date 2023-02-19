@@ -3,6 +3,7 @@ import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { Loader } from "../components/loader";
 import type { RouterInputs } from "../utils/api";
 import { api } from "../utils/api";
 
@@ -13,10 +14,19 @@ const TokenLogin = ({ token }: { token: string }) => {
   const { mutate, isSuccess } = api.auth.token.useMutation();
 
   useEffect(() => mutate({ token: token }), [mutate, token]);
+  useEffect(() => {
+    if (!isSuccess) return;
 
-  if (isSuccess) void router.push("/");
+    void router.push("/");
+  }, [isSuccess, router]);
 
-  return <div>Authenticating</div>;
+  return (
+    <div className="mt-32 mb-8 flex w-full flex-col justify-between sm:items-center">
+      <div className="text-center text-stone-200">
+        Authenticating, please wait
+      </div>
+    </div>
+  );
 };
 
 const Login: NextPage = () => {
@@ -28,13 +38,19 @@ const Login: NextPage = () => {
     defaultValues: {},
   });
 
-  const { mutate, error, isSuccess } = api.auth.login.useMutation();
+  const { mutate, error, isSuccess, isLoading } = api.auth.login.useMutation();
 
   const { handleSubmit, register } = methods;
 
+  useEffect(() => {
+    if (!isSuccess) return;
+
+    void router.push("/");
+  }, [isSuccess, router]);
+
   if (token) return <TokenLogin token={token as string} />;
 
-  if (isSuccess) void router.push("/");
+  if (isLoading) return <Loader />;
 
   return (
     <div className="mt-32 mb-8 flex w-full flex-col justify-between sm:items-center">
