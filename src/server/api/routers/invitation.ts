@@ -56,6 +56,7 @@ export const invitationRouter = createTRPCRouter({
           id: input
         },
         select: {
+          id: true,
           addressedTo: true,
           guests: {
             select: {
