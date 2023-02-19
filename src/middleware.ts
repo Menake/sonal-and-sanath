@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
         const url = new URL("/", request.url);
         console.log(`Session found, redirecting to: ${url.toString()}`);
 
-        return NextResponse.redirect(url, 307);
+        return NextResponse.redirect(url);
     }
 
     return NextResponse.next();
