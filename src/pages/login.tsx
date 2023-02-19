@@ -16,7 +16,7 @@ const TokenLogin = ({ token }: { token: string }) => {
 
   useEffect(() => mutate({ token: token }), [mutate, token]);
 
-  if (isSuccess) void router.push("/");
+  if (isSuccess) setTimeout(() => router.push("/"), 500);
 
   return (
     <div className="mt-32 mb-8 flex w-full flex-col justify-between sm:items-center">
@@ -48,11 +48,7 @@ const Login: NextPage = () => {
 
   const { handleSubmit, register } = methods;
 
-  useEffect(() => {
-    if (!isSuccess) return;
-
-    void router.push("/");
-  }, [isSuccess, router]);
+  if (isSuccess) setTimeout(() => router.push("/"), 500);
 
   if (token) return <TokenLogin token={token as string} />;
 
