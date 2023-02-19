@@ -17,12 +17,20 @@ export function middleware(request: NextRequest) {
         // Assume a "Cookie:session={SESSION_OBJECT}" header to be present on the incoming request
         // Getting cookies from the request using the `RequestCookies` API
 
-    const session = request.cookies.get('session')?.value;
+    const session = request.cookies.get("session")?.value;
 
-    if (!session && !pathname.startsWith("/login")) {
+    if (request.nextUrl.pathname.match(/\/(admin).*/)) {
+        return NextResponse.next();
+    }
+
+    if (!pathname.match(/\/(login).*/) && !session) {
         const loginUrl = new URL("/login", request.url);
 
-        return NextResponse.redirect(loginUrl);
+        return NextResponse.redirect(loginUrl, 307);
+    }
+
+    if (request.nextUrl.pathname.match(/\/(login).*/) && session) {
+        return NextResponse.redirect("/", 307);
     }
 
     return NextResponse.next();
