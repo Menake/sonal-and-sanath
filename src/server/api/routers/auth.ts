@@ -20,6 +20,8 @@ export const authRouter = createTRPCRouter({
           invitation: invitation.id 
         }
 
+        console.log("Setting cookie", JSON.stringify(session));
+
         setCookie("session", JSON.stringify(session), { req: ctx.req, res: ctx.res, sameSite: true, maxAge: 60*6*24});
   }),
   login: publicProcedure

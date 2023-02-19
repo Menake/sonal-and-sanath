@@ -17,7 +17,10 @@ export function middleware(request: NextRequest) {
         // Assume a "Cookie:session={SESSION_OBJECT}" header to be present on the incoming request
         // Getting cookies from the request using the `RequestCookies` API
 
-    const session = request.cookies.get("session")?.value;
+    const session = request.cookies.get("session");
+
+    console.log(session);
+    console.log(request.nextUrl);
 
     if (request.nextUrl.pathname.match(/\/(admin).*/)) {
         return NextResponse.next();
@@ -31,7 +34,7 @@ export function middleware(request: NextRequest) {
 
     if (request.nextUrl.pathname.match(/\/(login).*/) && session) {
         const homeUrl = request.nextUrl.clone();
-        homeUrl.pathname = "/";
+        homeUrl.href = "/";
         return NextResponse.redirect(homeUrl, 307);
     }
 
