@@ -11,7 +11,7 @@ type LoginCredentials = RouterInputs["auth"]["login"];
 
 const TokenLogin = ({ token }: { token: string }) => {
   const router = useRouter();
-  const { mutate, isSuccess } = api.auth.token.useMutation();
+  const { mutate, isSuccess, isError } = api.auth.token.useMutation();
 
   useEffect(() => mutate({ token: token }), [mutate, token]);
   useEffect(() => {
@@ -25,6 +25,12 @@ const TokenLogin = ({ token }: { token: string }) => {
       <div className="text-center text-stone-200">
         Authenticating, please wait
       </div>
+      {isError && (
+        <div className="text-stone-200">
+          Oops! Something went wrong. Please refresh the page and get in touch
+          with Sonal or Sanath if the problem persists
+        </div>
+      )}
     </div>
   );
 };
