@@ -30,7 +30,9 @@ export function middleware(request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.match(/\/(login).*/) && session) {
-        return NextResponse.redirect("/", 307);
+        const homeUrl = request.nextUrl.clone();
+        homeUrl.pathname = "/";
+        return NextResponse.redirect(homeUrl, 307);
     }
 
     return NextResponse.next();
