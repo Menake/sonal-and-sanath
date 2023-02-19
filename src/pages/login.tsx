@@ -11,22 +11,22 @@ type LoginCredentials = RouterInputs["auth"]["login"];
 
 const TokenLogin = ({ token }: { token: string }) => {
   const router = useRouter();
-  const { mutate, isSuccess, isError } = api.auth.token.useMutation();
+  const { mutate, isLoading, isSuccess, isError } =
+    api.auth.token.useMutation();
 
   useEffect(() => mutate({ token: token }), [mutate, token]);
-  useEffect(() => {
-    if (!isSuccess) return;
 
-    void router.push("/");
-  }, [isSuccess, router]);
+  if (isSuccess) void router.push("/");
 
   return (
     <div className="mt-32 mb-8 flex w-full flex-col justify-between sm:items-center">
-      <div className="text-center text-stone-200">
-        Authenticating, please wait
-      </div>
+      {isLoading && (
+        <div className="text-center text-stone-200">
+          Authenticating, please wait
+        </div>
+      )}
       {isError && (
-        <div className="text-stone-200">
+        <div className="text-justify text-stone-200">
           Oops! Something went wrong. Please refresh the page and get in touch
           with Sonal or Sanath if the problem persists
         </div>
