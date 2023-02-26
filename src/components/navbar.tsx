@@ -4,6 +4,7 @@ import { Navigation } from "./navigation";
 import { MenuToggle } from "./navigation/toggle";
 import { MenuItem } from "./navigation/menu-item";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSession } from "../SessionProvider";
 
 const sidebar = {
   open: {
@@ -26,6 +27,8 @@ const sidebar = {
 export const Navbar = () => {
   const [isOpen, toggleOpen] = useCycle(false, true);
   const queryClient = useQueryClient();
+
+  const { clearSession } = useSession();
 
   return (
     <div className="h-16 w-full pt-3">
@@ -90,9 +93,41 @@ export const Navbar = () => {
             variants={sidebar}
           >
             <Navigation>
-              <MenuItem href="/" title="Home" toggle={toggleOpen} />
-              <MenuItem href="gallery" title="Gallery" toggle={toggleOpen} />
-              <MenuItem href="events" title="Events" toggle={toggleOpen} />
+              <MenuItem>
+                <Link
+                  onClick={() => toggleOpen()}
+                  className="my-16 block text-center text-3xl text-stone-300"
+                  href="home"
+                >
+                  Home
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link
+                  onClick={() => toggleOpen()}
+                  className="my-16 block text-center text-3xl text-stone-300"
+                  href="gallery"
+                >
+                  Gallery
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link
+                  onClick={() => toggleOpen()}
+                  className="my-16 block text-center text-3xl text-stone-300"
+                  href="events"
+                >
+                  Events
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <button
+                  className="my-16 block w-full text-center text-3xl text-stone-300"
+                  onClick={() => void clearSession()}
+                >
+                  Sign Out
+                </button>
+              </MenuItem>
             </Navigation>
 
             <div className="absolute top-5 right-5">

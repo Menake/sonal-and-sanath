@@ -1,6 +1,5 @@
-import type { Cycle } from "framer-motion";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import type { ReactNode } from "react";
 
 const variants = {
   open: {
@@ -19,28 +18,14 @@ const variants = {
   },
 };
 
-export const MenuItem = ({
-  href,
-  title,
-  toggle,
-}: {
-  href: string;
-  title: string;
-  toggle: Cycle;
-}) => {
+export const MenuItem = ({ children }: { children: ReactNode }) => {
   return (
     <motion.li
       variants={variants}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
     >
-      <Link
-        onClick={() => toggle()}
-        className="my-16 block text-center text-3xl text-stone-300"
-        href={href}
-      >
-        {title}
-      </Link>
+      {children}
     </motion.li>
   );
 };

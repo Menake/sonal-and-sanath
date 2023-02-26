@@ -9,18 +9,15 @@ const Home: NextPage = () => {
         </div>
         <div className="border-bg-white mt-2 w-full border"></div>
       </div>
-      <div className="flex flex-col justify-center sm:flex-row">
-        <div className="text-5xl uppercase text-stone-100 sm:text-center">
-          Sonal
+      <div className="z-10 flex w-full flex-row justify-center text-4xl font-light text-stone-200 sm:flex-row">
+        <div>SONAL</div>
+        <div className="relative z-0 mt-5 -ml-1.5 text-4xl font-light opacity-40 sm:mx-2 sm:mt-0">
+          &
         </div>
-        <div className="flex flex-row justify-end text-right sm:flex-none">
-          <div className="text-right text-5xl uppercase text-stone-100 sm:text-center">
-            <span className="text-opacity-40">&</span> Sanath
-          </div>
-        </div>
+        <div className="-ml-1.5 mt-10 sm:m-0">SANATH</div>
       </div>
       <div className="flex h-1/4 w-full flex-col items-end justify-end border-r border-stone-100">
-        <p className="sm:text-md w-3/4 pr-5 text-right text-sm italic text-stone-100 sm:w-1/2">
+        <p className="sm:text-md w-3/4 pr-5 text-right text-sm italic text-stone-100 sm:w-1/2 md:w-1/3">
           Thank you for being part of of our journey thus far. We would love to
           have you join us as we start this new chapter of our lives together.
         </p>
