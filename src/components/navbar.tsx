@@ -63,14 +63,6 @@ export const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link
-                href="events"
-                className="block rounded py-2 pl-3 pr-4 text-stone-200 hover:text-gray-300 "
-              >
-                Events
-              </Link>
-            </li>
-            <li>
               <button
                 onClick={() => {
                   localStorage.removeItem("session");
@@ -109,15 +101,6 @@ export const Navbar = () => {
                   href="gallery"
                 >
                   Gallery
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <Link
-                  onClick={() => toggleOpen()}
-                  className="my-16 block text-center text-3xl text-stone-300"
-                  href="events"
-                >
-                  Events
                 </Link>
               </MenuItem>
               <MenuItem>

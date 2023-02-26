@@ -14,7 +14,7 @@ const TokenLogin = ({ token }: { token: string }) => {
   const { setSession } = useSession();
 
   const { mutate, isLoading, isError } = api.auth.token.useMutation({
-    onSuccess: async (data) => await setSession(data.invitation),
+    onSuccess: async (data) => await setSession(data),
   });
 
   useEffect(() => mutate({ token: token }), [mutate, token]);
@@ -39,7 +39,7 @@ const TokenLogin = ({ token }: { token: string }) => {
 const Login: NextPage = () => {
   const { setSession } = useSession();
   const { mutate, error, isLoading } = api.auth.login.useMutation({
-    onSuccess: async (data) => await setSession(data.invitationId),
+    onSuccess: async (data) => await setSession(data),
   });
 
   const methods = useForm<LoginCredentials>({

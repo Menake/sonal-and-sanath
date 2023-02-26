@@ -20,9 +20,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { prisma } from "../db";
 
 type CreateContextOptions = {
-  invitationId?: string,
-  req: NextApiRequest,
-  res: NextApiResponse
+  session: string | null
 }
 
 /**
@@ -38,9 +36,7 @@ type CreateContextOptions = {
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
     prisma,
-    invitationId: _opts.invitationId,
-    req: _opts.req,
-    res: _opts.res
+    session: _opts.session
   };
 };
 
@@ -50,12 +46,10 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  const {req, res} = _opts;
-  
-  const invitationId = req.cookies["invitationId"];
+export const createTRPCContext = ({ req }: CreateNextContextOptions) => {  
+  const session = req.headers.authorization || "";
 
-  return createInnerTRPCContext({ invitationId, req, res });
+  return createInnerTRPCContext({ session });
 };
 
 /**
@@ -66,7 +60,6 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -76,11 +69,11 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 });
 
 const isAuthed = t.middleware(({ctx, next}) => {
-  if (!ctx.invitationId) throw new TRPCError({code: "UNAUTHORIZED"});
+  if (!ctx.session) throw new TRPCError({code: "UNAUTHORIZED"});
 
   return next({
     ctx: {
-      invitation: ctx.invitationId,
+      invitationId: ctx.session,
     }
   })
 })

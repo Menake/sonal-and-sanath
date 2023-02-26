@@ -31,7 +31,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     ((page) => {
       return (
         <main
-          className={`min-w-screen flex min-h-screen flex-col items-center justify-center bg-[#8A9587] px-5 ${baskervville.variable}`}
+          className={`min-w-screen flex h-full min-h-screen flex-1 flex-col items-center justify-center bg-[#8A9587] px-5 ${baskervville.variable}`}
         >
           <Navbar />
           <div className="z-10 flex w-full flex-1 pt-3">{page}</div>

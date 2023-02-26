@@ -11,6 +11,7 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
 
 import { type AppRouter } from "../server/api/root";
+import { Session } from "../SessionProvider";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -21,6 +22,7 @@ const getBaseUrl = () => {
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
+    
     return {
       /**
        * Transformer used for data de-serialization from the server.
@@ -42,6 +44,17 @@ export const api = createTRPCNext<AppRouter>({
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          headers() {
+            const sessionString = typeof window !== 'undefined' ?
+                window.localStorage.getItem("session")
+                : "{}";
+
+            const session = JSON.parse(sessionString || "{}") as Session;
+
+            return {
+              Authorization: session.invitationId
+            }
+          }
         }),
       ],
     };

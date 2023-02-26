@@ -10,13 +10,18 @@ export const authRouter = createTRPCRouter({
         const invitation = await ctx.prisma.invitation.findUnique({
           where: {
             id: input.token
+          },
+          select: {
+            id: true,
+            addressedTo: true
           }
         });
 
         if (!invitation) throw new TRPCError({code: "NOT_FOUND"});
 
         return {
-          invitation: invitation.id 
+          invitationId: invitation.id,
+          addressedTo: invitation.addressedTo
         }
     }),
   login: publicProcedure
@@ -27,15 +32,20 @@ export const authRouter = createTRPCRouter({
           name: input.name
         },
         select: {
-          name: true,
-          invitationId: true
+          invitation: {
+            select: {
+              id: true,
+              addressedTo: true
+            }
+          }
         }
       });
 
       if (!guest) throw new TRPCError({code: "NOT_FOUND"});
 
       return {
-        invitationId: guest.invitationId
-      };
+        invitationId: guest.invitation.id,
+        addressedTo: guest.invitation.addressedTo
+      }
   }),
 });

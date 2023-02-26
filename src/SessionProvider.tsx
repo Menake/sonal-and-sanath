@@ -6,13 +6,27 @@ import type { ReactNode } from "react";
 import { useContext } from "react";
 import { createContext } from "react";
 
-export type Session = {
-  sessionId?: string;
-  setSession: (session: string) => Promise<void>;
+export type SessionContext = {
+  session: {
+    invitationId: string;
+    addressedTo: string;
+  };
+  setSession: (session: Session) => Promise<void>;
   clearSession: () => Promise<void>;
 };
 
-const SessionContext = createContext<Session>({
+export type Session = {
+  invitationId: string;
+  addressedTo: string;
+};
+
+const defaultSession = {
+  invitationId: "",
+  addressedTo: "",
+};
+
+const SessionContext = createContext<SessionContext>({
+  session: defaultSession,
   setSession: async () => {},
   clearSession: async () => {},
 });
@@ -24,14 +38,18 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
   const { data, isFetched } = useQuery(["session"], () => {
-    const session = localStorage.getItem("session");
+    const sessionString = localStorage.getItem("session");
+
+    if (!sessionString) return null;
+
+    const session = JSON.parse(sessionString || "{}") as Session;
     return {
       session,
     };
   });
 
-  const setSession = async (session: string) => {
-    localStorage.setItem("session", session);
+  const setSession = async (session: Session) => {
+    localStorage.setItem("session", JSON.stringify(session));
     await queryClient.invalidateQueries({ queryKey: ["session"] });
   };
 
@@ -50,6 +68,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   return (
     <SessionContext.Provider
       value={{
+        session: data?.session || defaultSession,
         setSession,
         clearSession,
       }}
