@@ -97,7 +97,7 @@ export const Navbar = () => {
                 <Link
                   onClick={() => toggleOpen()}
                   className="my-16 block text-center text-3xl text-stone-300"
-                  href="home"
+                  href="/"
                 >
                   Home
                 </Link>
