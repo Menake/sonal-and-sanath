@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { setCookie } from 'cookies-next';
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
@@ -16,14 +15,10 @@ export const authRouter = createTRPCRouter({
 
         if (!invitation) throw new TRPCError({code: "NOT_FOUND"});
 
-        const session = {
+        return {
           invitation: invitation.id 
         }
-
-        console.log("Setting cookie", JSON.stringify(session));
-
-        setCookie("session", JSON.stringify(session), { req: ctx.req, res: ctx.res, sameSite: true, maxAge: 60*6*24});
-  }),
+    }),
   login: publicProcedure
     .input(z.object({name: z.string()}))
     .mutation(async ({ ctx, input }) => {
@@ -39,10 +34,8 @@ export const authRouter = createTRPCRouter({
 
       if (!guest) throw new TRPCError({code: "NOT_FOUND"});
 
-      const session = {
+      return {
         invitationId: guest.invitationId
       };
-
-      setCookie("session", JSON.stringify(session), { req: ctx.req, res: ctx.res, sameSite: true, maxAge: 60*6*24});
   }),
 });

@@ -3,6 +3,7 @@ import { motion, useCycle } from "framer-motion";
 import { Navigation } from "./navigation";
 import { MenuToggle } from "./navigation/toggle";
 import { MenuItem } from "./navigation/menu-item";
+import { useQueryClient } from "@tanstack/react-query";
 
 const sidebar = {
   open: {
@@ -24,6 +25,7 @@ const sidebar = {
 
 export const Navbar = () => {
   const [isOpen, toggleOpen] = useCycle(false, true);
+  const queryClient = useQueryClient();
 
   return (
     <div className="h-16 w-full pt-3">
@@ -64,6 +66,17 @@ export const Navbar = () => {
               >
                 Events
               </Link>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("session");
+                  void queryClient.invalidateQueries({ queryKey: ["session"] });
+                }}
+                className="block rounded py-2 pl-3 pr-4 text-stone-200 hover:text-gray-300 "
+              >
+                Sign Out
+              </button>
             </li>
           </ul>
         </nav>

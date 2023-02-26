@@ -4,19 +4,20 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Loader } from "../components/loader";
+import { useSession } from "../SessionProvider";
 import type { RouterInputs } from "../utils/api";
 import { api } from "../utils/api";
 
 type LoginCredentials = RouterInputs["auth"]["login"];
 
 const TokenLogin = ({ token }: { token: string }) => {
-  const router = useRouter();
-  const { mutate, isLoading, isSuccess, isError } =
-    api.auth.token.useMutation();
+  const { setSession } = useSession();
+
+  const { mutate, isLoading, isError } = api.auth.token.useMutation({
+    onSuccess: async (data) => await setSession(data.invitation),
+  });
 
   useEffect(() => mutate({ token: token }), [mutate, token]);
-
-  if (isSuccess) setTimeout(() => router.push("/"), 500);
 
   return (
     <div className="mt-32 mb-8 flex w-full flex-col justify-between sm:items-center">
@@ -36,20 +37,18 @@ const TokenLogin = ({ token }: { token: string }) => {
 };
 
 const Login: NextPage = () => {
-  const router = useRouter();
-
-  const { token } = router.query;
+  const { setSession } = useSession();
+  const { mutate, error, isLoading } = api.auth.login.useMutation({
+    onSuccess: async (data) => await setSession(data.invitationId),
+  });
 
   const methods = useForm<LoginCredentials>({
     defaultValues: {},
   });
-
-  const { mutate, error, isSuccess, isLoading } = api.auth.login.useMutation();
-
   const { handleSubmit, register } = methods;
 
-  if (isSuccess) setTimeout(() => router.push("/"), 500);
-
+  const router = useRouter();
+  const { token } = router.query;
   if (token) return <TokenLogin token={token as string} />;
 
   if (isLoading) return <Loader />;

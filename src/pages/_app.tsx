@@ -8,6 +8,7 @@ import { Baskervville } from "@next/font/google";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
+import { SessionProvider } from "../SessionProvider";
 
 const baskervville = Baskervville({
   subsets: ["latin"],
@@ -23,7 +24,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   // Use the layout defined at the page level, if available
   const getLayout =
     Component.getLayout ??
@@ -40,7 +41,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
 
   const layout = getLayout(<Component {...pageProps} />);
 
-  return <>{layout}</>;
+  return <SessionProvider>{layout}</SessionProvider>;
 };
 
-export default api.withTRPC(MyApp);
+export default api.withTRPC(App);
