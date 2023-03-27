@@ -84,6 +84,7 @@ const RsvpForm = (props: {
     <FormProvider {...methods}>
       <form
         className="flex h-full flex-1 flex-col"
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onSubmit={handleSubmit(props.onSubmit)}
       >
         <div className="mt-8 text-lg ">Attendance</div>

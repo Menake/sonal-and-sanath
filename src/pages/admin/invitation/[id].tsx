@@ -28,8 +28,8 @@ function InvitationFormWrapper({ invitationId }: { invitationId: string }) {
 
   const { data } = api.invitation.get.useQuery(invitationId);
   const { mutate, isLoading } = api.invitation.update.useMutation({
-    async onSuccess(input) {
-      await utils.invitation.get.invalidate(input.id);
+    onSuccess: async (input, { id }) => {
+      await utils.invitation.get.invalidate(id);
       await router.push("/admin");
     },
   });
