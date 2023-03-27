@@ -1,7 +1,8 @@
+import { Status } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const invitationRouter = createTRPCRouter({
   create: publicProcedure
@@ -10,18 +11,36 @@ export const invitationRouter = createTRPCRouter({
       events: z.array(z.string()),
       guests: z.array(z.object({name: z.string()}))
     }))  
-  .mutation(({ ctx, input}) => {
-    return ctx.prisma.invitation.create({
+  .mutation(async ({ ctx, input}) => {
+    const invitation = await ctx.prisma.invitation.create({
         data: {
             addressedTo: input.addressedTo,
             events: {
                 connect: input.events.map(eventId => ({id: eventId}))
             },
             guests: {
-                create: input.guests.map(guest => ({ name: guest.name}))
+              create: input.guests.map(guest => ({ name: guest.name }))
             }
+        },
+        include: {
+          guests: true,
+          events: true
         }
-    })
+    });
+
+    for (const guest of invitation.guests) {
+      const guestEvents = invitation.events.map(event => ({ eventId: event.id, status: Status.NORESPONSE}))
+      await ctx.prisma.guest.update({
+        where: {
+          id: guest.id,
+        },
+        data: {
+          eventStatus: {
+            create: guestEvents
+          }
+        }
+      })
+    }
   }),
   update: publicProcedure
     .input(z.object({
@@ -30,8 +49,8 @@ export const invitationRouter = createTRPCRouter({
         events: z.array(z.string()),
         guests: z.array(z.object({name: z.string()}))
     }))  
-  .mutation(({ ctx, input}) => {    
-    return ctx.prisma.invitation.update({
+  .mutation(async ({ ctx, input}) => {    
+    const invitation = await ctx.prisma.invitation.update({
       where: {
         id: input.id
       },
@@ -45,10 +64,28 @@ export const invitationRouter = createTRPCRouter({
           deleteMany: {},
           create: input.guests.map(guest => ({name: guest.name}))
         }
+      },
+      include: {
+        guests: true,
+        events: true
       }
     });
+
+    for (const guest of invitation.guests) {
+      const guestEvents = invitation.events.map(event => ({ eventId: event.id, status: Status.NORESPONSE}))
+      await ctx.prisma.guest.update({
+        where: {
+          id: guest.id,
+        },
+        data: {
+          eventStatus: {
+            create: guestEvents
+          }
+        }
+      })
+    }
   }),
-  get: publicProcedure
+  get: protectedProcedure
     .input(z.string())
     .query(async ({ctx, input}) => {
       const invitation = await ctx.prisma.invitation.findUnique({
@@ -60,7 +97,8 @@ export const invitationRouter = createTRPCRouter({
           addressedTo: true,
           guests: {
             select: {
-              name: true
+              name: true,
+              status: true
             }
           },
           events: {
@@ -76,6 +114,44 @@ export const invitationRouter = createTRPCRouter({
         ...invitation,
         events: invitation.events.map(event => event.id)
       };
+    }),
+  getForEvent: protectedProcedure
+    .input(z.string())
+    .query(async ({ctx, input}) => {
+
+      const guestStatuses = await ctx.prisma.guest.findMany({
+        where: {
+          invitationId: ctx.invitationId,
+          eventStatus: {
+            some: {
+              eventId: input
+            }
+          }
+        }
+      });
+
+      const event = await ctx.prisma.event.findUnique({
+        where: {
+          id: input
+        },
+        include: {
+          venue: true
+        }
+      });
+
+      return {
+        ...event,
+        guests: guestStatuses
+      }
+    }),
+  rsvp: protectedProcedure
+    .input(z.object({
+      eventId: z.string(),
+      guests: z.array(z.object({ guestId: z.string(), status: z.string()})),
+      transport: z.array(z.object({ guestId: z.string(), requiresTransport: z.boolean()}))
+    }))
+    .mutation(({input, ctx}) => {
+      return {}
     }),
   all: publicProcedure
     .query(async ({ctx}) => {

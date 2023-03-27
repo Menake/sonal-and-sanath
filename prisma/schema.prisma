@@ -25,13 +25,14 @@ model Venue {
 }
 
 model Event {
-    id          String       @id @default(cuid())
+    id          String             @id @default(cuid())
     name        String
     date        DateTime
-    venue       Venue        @relation(fields: [venueId], references: [id])
+    venue       Venue              @relation(fields: [venueId], references: [id])
     venueId     String
     dressCode   String
     invitations Invitation[]
+    guestStatus GuestEventStatus[]
 
     @@index([venueId])
 }
@@ -44,11 +45,26 @@ model Invitation {
 }
 
 model Guest {
-    id           String     @id @default(cuid())
+    id           String             @id @default(cuid())
     name         String
-    status       Status     @default(NORESPONSE)
-    invitation   Invitation @relation(fields: [invitationId], references: [id])
+    status       Status             @default(NORESPONSE)
+    invitation   Invitation         @relation(fields: [invitationId], references: [id])
     invitationId String
+    eventStatus  GuestEventStatus[]
 
     @@index([invitationId])
+}
+
+model GuestEventStatus {
+    guestId String
+    guest   Guest  @relation(fields: [guestId], references: [id])
+
+    eventId String
+    event   Event  @relation(fields: [eventId], references: [id])
+
+    status Status @default(NORESPONSE)
+
+    @@id([guestId, eventId])
+    @@index([guestId])
+    @@index([eventId])
 }

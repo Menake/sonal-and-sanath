@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mb-8 flex h-screen w-full flex-col justify-between sm:items-center">
+      <div className="flex h-screen w-full flex-col justify-between sm:items-center">
         <div className="flex h-1/4 flex-col items-center justify-center px-5">
           <span className="w-full text-center text-lg italic text-stone-100">
             Dear {session.addressedTo}{" "}

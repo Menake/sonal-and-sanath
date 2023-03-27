@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useRouter } from "next/router";
-import { ReactElement, useRef } from "react";
+import type { ReactElement } from "react";
+import { useRef } from "react";
 import { InvitationForm } from "../../../components/invitationForm";
 import AdminLayout from "../../../components/layouts/admin";
 import type { RouterOutputs } from "../../../utils/api";
