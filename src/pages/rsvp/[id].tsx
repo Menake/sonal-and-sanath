@@ -1,20 +1,19 @@
 import { Status } from "@prisma/client";
-import { inferRouterInputs } from "@trpc/server";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Loader } from "../../components/loader";
-import { api, RouterInputs, RouterOutputs } from "../../utils/api";
+import type { RouterInputs, RouterOutputs } from "../../utils/api";
+import { api } from "../../utils/api";
 
 type Rsvp = RouterInputs["invitation"]["rsvp"];
-type Guest = RouterOutputs["invitation"]["getForEvent"]["guests"][number];
+type Event = RouterOutputs["invitation"]["getRsvp"][number];
 
 const RsvpPage: NextPage = () => {
   const router = useRouter();
-  const { id } = router.query;
 
-  const { data, isLoading } = api.invitation.getForEvent.useQuery(id as string);
-  const { mutate } = api.invitation.rsvp.useMutation();
+  const { data, isLoading } = api.invitation.getRsvp.useQuery();
+  const { mutateAsync } = api.invitation.rsvp.useMutation();
 
   if (isLoading)
     return (
@@ -25,154 +24,149 @@ const RsvpPage: NextPage = () => {
 
   if (!data) return null;
 
-  const defaultData: Rsvp = {
-    guests: data.guests.map((guest) => ({
-      guestId: guest.id,
-      status: guest.status,
-    })),
-    eventId: id as string,
-    transport: [],
+  const handleSubmit = async (data: Rsvp) => {
+    await mutateAsync(data);
+    void router.push("/");
   };
 
-  return (
-    <div className="flex w-full items-center justify-center text-stone-100">
-      <div className="md-w1/2 sm:w-3/4">
-        <div className="mt-12 mb-2 text-2xl sm:text-4xl">{data.name}</div>
-        <div className="mb-4 text-sm italic">
-          {data.venue?.name} {data.venue?.address}
-        </div>
-        <div className="italic">Date: {data.date?.toDateString()}</div>
-        <div className="italic">Time: {data.date?.toTimeString()}</div>
-        <div className="italic">Attire: {data.dressCode}</div>
-
-        <div className="mt-8">
-          <RsvpForm
-            data={defaultData}
-            guests={data.guests}
-            onSubmit={(data) => {
-              console.log(data);
-              // mutate({ ...data });
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  );
+  return <RsvpForm data={{ events: data }} onSubmit={handleSubmit} />;
 };
 
 const RsvpForm = (props: {
-  data: Rsvp;
-  guests: Guest[];
-  onSubmit: (data: Rsvp) => void;
+  data: {
+    events: Event[];
+  };
+  onSubmit: (data: Rsvp) => Promise<void>;
 }) => {
+  const rsvp = props.data.events.map((event) => {
+    return {
+      id: event.id,
+      guests: event.guests.map((guest) => ({
+        id: guest.id,
+        status: guest.status,
+        requiresTransport: guest.requiresTransport,
+      })),
+    };
+  });
+
   const methods = useForm({
-    defaultValues: props.data,
+    defaultValues: {
+      events: rsvp,
+    },
   });
 
   const { control, handleSubmit, register } = methods;
-  const { fields } = useFieldArray({
-    control,
-    name: "guests",
-  });
 
-  const { fields: transportFields } = useFieldArray({
-    control,
-    name: "transport",
-  });
+  const fields = useFieldArray({ control, name: "events" });
 
   return (
     <FormProvider {...methods}>
       <form
-        className="flex h-full flex-1 flex-col"
+        className="mt-4 flex h-full w-full flex-1 flex-col items-center justify-center"
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onSubmit={handleSubmit(props.onSubmit)}
       >
-        <div className="mt-8 text-lg ">Attendance</div>
-        <div className="mb-8 text-sm italic">
-          Please indicate a response for each guest below
-        </div>
-        {props.guests.map((guest, index) => {
-          const guestStatus = fields.find((g) => g.guestId === guest.id);
+        <div className="sm:w-3/4 lg:w-1/2">
+          {props.data.events.map((event, eventIndex) => (
+            <div key={event.id}>
+              <div className="mb-8 mt-3 flex w-full  flex-col text-stone-100">
+                <div className="mb-2 text-2xl sm:text-4xl">{event.name}</div>
+                <div className="text-sm italic">
+                  {event.venue?.name} {event.venue?.address}
+                </div>
+                <div className="my-2 text-sm italic">
+                  {event.date?.toLocaleDateString("en-NZ", {
+                    dateStyle: "long",
+                  })}
+                  <span className="ml-2">
+                    {event.date?.toLocaleTimeString("en-NZ", {
+                      timeStyle: "long",
+                    })}
+                  </span>
+                </div>
+                <div className="text-sm italic">Attire: {event.dressCode}</div>
 
-          return (
-            <div
-              key={guest.id}
-              className="flex w-full flex-row items-center justify-between"
-            >
-              {guest.name}
-              <div className="flex w-1/2 flex-row justify-end">
-                <label className="relative mr-4 flex w-1/2 flex-row items-center justify-center rounded-lg border border-stone-100 peer-checked:bg-stone-100">
-                  Yes
-                  <input
-                    key={guestStatus?.guestId}
-                    value={Status.ATTENDING}
-                    type="radio"
-                    {...register(`guests.${index}.status`)}
-                    className="peer sr-only absolute left-1/2 h-full w-full -translate-x-1/2 appearance-none rounded-md"
-                  />
-                </label>
-                <label className="relative flex w-1/2 flex-row items-center justify-center rounded-lg border border-stone-100">
-                  No
-                  <input
-                    key={guestStatus?.guestId}
-                    value={Status.NOTATTENDING}
-                    type="radio"
-                    {...register(`guests.${index}.status`)}
-                    className="peer sr-only absolute left-1/2 h-full w-full -translate-x-1/2 appearance-none rounded-md"
-                  />
-                </label>
+                <div className="my-4">
+                  <div className="mt-8 text-sm italic">
+                    Please indicate an attendance response for each guest below.
+                    If you required transport please select the toggle
+                  </div>
+                  <div className="divider mt-2" />
+                  {event.guests.map((guest, guestIndex) => {
+                    const eventGuest = fields.fields
+                      .find((e) => e.id === event.id)
+                      ?.guests.find((g) => g.id === guest.id);
+
+                    return (
+                      <div
+                        key={guest.id}
+                        className="mb-10 flex w-full flex-col"
+                      >
+                        <div className="mb-3 text-lg">{guest.name}</div>
+                        <div className="flex flex-row justify-between">
+                          <div className="h-100 flex flex-col justify-between">
+                            <label className="mb-4 text-sm">Attendance</label>
+                            <div>
+                              <label>
+                                <input
+                                  key={eventGuest?.id}
+                                  type="radio"
+                                  {...register(
+                                    `events.${eventIndex}.guests.${guestIndex}.status`
+                                  )}
+                                  value={Status.ATTENDING}
+                                  className="peer sr-only absolute h-0 w-0"
+                                />
+                                <span className="rounded rounded-r-none border border-stone-100 p-3 text-sm peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
+                                  Attending
+                                </span>
+                              </label>
+                              <label>
+                                <input
+                                  key={eventGuest?.id}
+                                  type="radio"
+                                  {...register(
+                                    `events.${eventIndex}.guests.${guestIndex}.status`
+                                  )}
+                                  value={Status.NOTATTENDING}
+                                  className="peer sr-only absolute h-0 w-0"
+                                />
+                                <span className="rounded rounded-l-none border border-l-0 border-stone-100 p-3 text-sm peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
+                                  Not Attending
+                                </span>
+                              </label>
+                            </div>
+                          </div>
+                          <div className="h-100 flex flex-col items-center justify-between">
+                            <label className="mb-2 text-sm">Transport</label>
+
+                            <label>
+                              <input
+                                type="checkbox"
+                                {...register(
+                                  `events.${eventIndex}.guests.${guestIndex}.requiresTransport`
+                                )}
+                                className="peer toggle toggle-lg sr-only absolute h-0 w-0 bg-opacity-20"
+                              />
+                              <span className="flex h-6 w-11 items-center rounded-full bg-stone-100 opacity-40 duration-300 ease-in-out after:ml-0.5 after:h-5 after:w-5 after:rounded-full after:bg-[#8A9587] after:shadow-md after:duration-300   peer-checked:opacity-100 peer-checked:after:translate-x-full sm:hover:cursor-pointer"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          );
-        })}
+          ))}
 
-        <hr className="my-16" />
-        <div className="text-lg ">Transport</div>
-        <div className="mb-8 mt-6 text-sm italic">
-          Sonal & Sanath with try to arrange transport to and from the venues.
-          Please indicate below the guests who require transport. If you have
-          your own transport please still provide a response below
+          <button
+            className="mt-8 mb-8 w-full rounded border p-2 text-stone-100"
+            type="submit"
+          >
+            Submit
+          </button>
         </div>
-        {props.guests.map((guest, index) => {
-          const guestTransport = transportFields.find(
-            (g) => g.guestId === guest.id
-          );
-
-          return (
-            <div
-              key={guest.id}
-              className="flex w-full flex-row items-center justify-between"
-            >
-              {guest.name}
-              <div className="flex w-1/2 flex-row justify-end">
-                <label className="relative mr-4 flex w-1/2 flex-row items-center justify-center rounded-lg border border-stone-100 peer-checked:bg-stone-100">
-                  Yes
-                  <input
-                    key={guestTransport?.guestId}
-                    value={JSON.stringify(true)}
-                    type="radio"
-                    {...register(`transport.${index}.requiresTransport`)}
-                    className="peer sr-only absolute left-1/2 h-full w-full -translate-x-1/2 appearance-none rounded-md"
-                  />
-                </label>
-                <label className="relative flex w-1/2 flex-row items-center justify-center rounded-lg border border-stone-100">
-                  No
-                  <input
-                    key={guestTransport?.guestId}
-                    value={JSON.stringify(false)}
-                    type="radio"
-                    {...register(`transport.${index}.requiresTransport`)}
-                    className="peer sr-only absolute left-1/2 h-full w-full -translate-x-1/2 appearance-none rounded-md"
-                  />
-                </label>
-              </div>
-            </div>
-          );
-        })}
-
-        <button className="mt-16 mb-8 w-full rounded border p-2" type="submit">
-          Submit
-        </button>
       </form>
     </FormProvider>
   );

@@ -4,7 +4,13 @@ import type { RouterOutputs } from "../utils/api";
 
 type Event = RouterOutputs["events"]["invited"][number];
 
-export const Events = ({ events }: { events: Event[] }) => {
+export const Events = ({
+  events,
+  invitationId,
+}: {
+  events: Event[];
+  invitationId: string;
+}) => {
   const firstEvent = events[0];
   const secondEvent = events[1];
 
@@ -23,12 +29,6 @@ export const Events = ({ events }: { events: Event[] }) => {
           <div className="italic text-stone-100 opacity-75">
             {firstEvent.date.toString()}
           </div>
-          <button
-            className="mt-16 w-full rounded border border-stone-100 py-2 px-5 italic"
-            onClick={() => void router.push(`rsvp/${firstEvent.id}`)}
-          >
-            RSVP
-          </button>
         </div>
       )}
 
@@ -44,16 +44,16 @@ export const Events = ({ events }: { events: Event[] }) => {
             <div className="text-right italic text-stone-100 opacity-75">
               {secondEvent.date.toString()}
             </div>
-
-            <button
-              className="mt-16 w-full rounded border border-stone-100 py-2 px-5 italic"
-              onClick={() => void router.push(`rsvp/${secondEvent.id}`)}
-            >
-              RSVP
-            </button>
           </div>
         </div>
       )}
+
+      <button
+        className="mt-16 w-full rounded border border-stone-100 py-2 px-5 italic text-stone-100"
+        onClick={() => void router.push(`rsvp/${invitationId}`)}
+      >
+        RSVP
+      </button>
     </div>
   );
 };

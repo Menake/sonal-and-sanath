@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
@@ -17,5 +17,14 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  daisyui: {
+    styled: true,
+    themes: false,
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+    prefix: "",
+  },
+  plugins: [require("daisyui")],
 };

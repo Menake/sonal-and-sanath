@@ -62,7 +62,8 @@ model GuestEventStatus {
     eventId String
     event   Event  @relation(fields: [eventId], references: [id])
 
-    status Status @default(NORESPONSE)
+    status            Status  @default(NORESPONSE)
+    requiresTransport Boolean @default(false)
 
     @@id([guestId, eventId])
     @@index([guestId])

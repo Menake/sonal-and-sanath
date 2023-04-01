@@ -35,7 +35,7 @@ const Home: NextPage = () => {
           </p>
         </div>
       </div>
-      {data && <Events events={data} />}
+      {data && <Events events={data} invitationId={session.invitationId} />}
     </div>
   );
 };
