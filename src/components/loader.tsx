@@ -1,7 +1,7 @@
 export const Loader = ({
   spinnerColour = "bg-[#8A9587]",
 }: {
-  spinnerColour: string;
+  spinnerColour?: string;
 }) => {
   const circleCommonClasses = `h-2.5 w-2.5 ${spinnerColour} rounded-full`;
 
