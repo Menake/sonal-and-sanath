@@ -162,7 +162,7 @@ export const invitationRouter = createTRPCRouter({
           ...event,
           guests
         }
-      })
+      })?.sort((a, b) => a.date.getTime() - b.date.getTime())
 
       return events ?? []
     }),

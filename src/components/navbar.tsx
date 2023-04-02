@@ -5,10 +5,11 @@ import { MenuToggle } from "./navigation/toggle";
 import { MenuItem } from "./navigation/menu-item";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "../SessionProvider";
+import { useRouter } from "next/router";
 
 const sidebar = {
   open: {
-    clipPath: `circle(120% at 92% 10%)`,
+    clipPath: `circle(200% at 100% 10%)`,
     transition: {
       duration: 0.6,
     },
@@ -27,6 +28,7 @@ const sidebar = {
 export const Navbar = () => {
   const [isOpen, toggleOpen] = useCycle(false, true);
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { clearSession } = useSession();
 
@@ -67,6 +69,7 @@ export const Navbar = () => {
                 onClick={() => {
                   localStorage.removeItem("session");
                   void queryClient.invalidateQueries({ queryKey: ["session"] });
+                  void router.push("/");
                 }}
                 className="block rounded py-2 pl-3 pr-4 text-stone-200 hover:text-gray-300 "
               >
@@ -76,7 +79,7 @@ export const Navbar = () => {
           </ul>
         </nav>
         <motion.nav
-          className="absolute top-0 right-0 bottom-0 w-full sm:hidden"
+          className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden overscroll-none sm:hidden"
           initial={false}
           animate={isOpen ? "open" : "closed"}
         >
@@ -106,7 +109,11 @@ export const Navbar = () => {
               <MenuItem>
                 <button
                   className="my-16 block w-full text-center text-3xl text-stone-300"
-                  onClick={() => void clearSession()}
+                  onClick={() => {
+                    void clearSession();
+                    void router.reload();
+                    toggleOpen();
+                  }}
                 >
                   Sign Out
                 </button>
