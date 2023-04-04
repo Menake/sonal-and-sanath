@@ -25,14 +25,15 @@ model Venue {
 }
 
 model Event {
-    id          String             @id @default(cuid())
-    name        String
-    date        DateTime
-    venue       Venue              @relation(fields: [venueId], references: [id])
-    venueId     String
-    dressCode   String
-    invitations Invitation[]
-    guestStatus GuestEventStatus[]
+    id                 String             @id @default(cuid())
+    name               String
+    date               DateTime
+    venue              Venue              @relation(fields: [venueId], references: [id])
+    venueId            String
+    dressCode          String
+    invitations        Invitation[]
+    guestStatus        GuestEventStatus[]
+    transportAvailable Boolean            @default(false)
 
     @@index([venueId])
 }

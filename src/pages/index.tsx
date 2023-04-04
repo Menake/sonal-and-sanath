@@ -12,17 +12,14 @@ const Home: NextPage = () => {
     <div className="flex flex-1 flex-col">
       <div className="flex h-screen w-full flex-col justify-between sm:items-center">
         <div className="flex h-1/4 flex-col items-center justify-center px-5">
-          <span className="w-full text-center text-lg italic text-stone-100">
-            Dear {session.addressedTo}{" "}
-          </span>
           <div className="w-full text-center text-lg italic text-stone-100">
             You are invited to celebrate the wedding of
           </div>
-          <div className="border-bg-white mt-2 w-full border"></div>
+          <div className="border-bg-stone-100 mt-2 w-full border-b"></div>
         </div>
         <div className="z-10 flex w-full flex-row justify-center text-4xl font-light text-stone-200 sm:flex-row">
           <div>SONAL</div>
-          <div className="relative z-0 mt-5 -ml-1.5 text-4xl font-light opacity-40 sm:mx-2 sm:mt-0">
+          <div className="relative z-0 mt-5 -ml-1.5 text-5xl font-light opacity-40 sm:mx-2 sm:mt-0">
             &
           </div>
           <div className="-ml-1.5 mt-10 sm:m-0">SANATH</div>
