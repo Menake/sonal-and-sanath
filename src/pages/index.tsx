@@ -2,6 +2,7 @@ import { type NextPage } from "next";
 import { Events } from "../components/events";
 import { useSession } from "../SessionProvider";
 import { api } from "../utils/api";
+import { Separator } from "@/components/ui/separator";
 
 const Home: NextPage = () => {
   const { data } = api.events.invited.useQuery();
@@ -15,7 +16,7 @@ const Home: NextPage = () => {
           <div className="w-full text-center text-lg italic text-stone-100">
             You are invited to celebrate the wedding of
           </div>
-          <div className="border-bg-stone-100 mt-2 w-full border-b"></div>
+          <Separator />
         </div>
         <div className="z-10 flex w-full flex-row justify-center text-4xl font-light text-stone-200 sm:flex-row">
           <div>SONAL</div>

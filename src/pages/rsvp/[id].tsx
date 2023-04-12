@@ -10,9 +10,12 @@ import {
 import { Loader } from "../../components/loader";
 import type { RouterInputs, RouterOutputs } from "../../utils/api";
 import { api } from "../../utils/api";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type Rsvp = RouterInputs["invitation"]["rsvp"];
-type Event = RouterOutputs["invitation"]["getRsvp"][number];
+type Event = RouterOutputs["invitation"]["getRsvp"]["events"][number];
 
 const RsvpPage: NextPage = () => {
   const router = useRouter();
@@ -38,7 +41,7 @@ const RsvpPage: NextPage = () => {
     void router.push("/");
   };
 
-  return <RsvpForm data={{ events: data }} onSubmit={handleSubmit} />;
+  return <RsvpForm data={{ events: data.events }} onSubmit={handleSubmit} />;
 };
 
 const RsvpForm = (props: {
@@ -53,7 +56,7 @@ const RsvpForm = (props: {
       guests: event.guests.map((guest) => ({
         id: guest.id,
         status: guest.status,
-        requiresTransport: guest.requiresTransport,
+        requiresTransport: event.transportAvailable && guest.requiresTransport,
       })),
     };
   });
@@ -82,7 +85,7 @@ const RsvpForm = (props: {
               key={event.id}
             >
               <div className="px-5">
-                <div className="border-bg-stone-100 mt-2 mb-8 w-full border-b text-stone-100" />
+                <Separator />
                 <div className="my-8 text-center text-2xl uppercase italic sm:text-4xl">
                   {event.name}
                 </div>
@@ -99,8 +102,8 @@ const RsvpForm = (props: {
                       key={guest.id}
                       className="mb-10 flex w-full flex-row items-center justify-between"
                     >
-                      <div className="w-1/3 text-lg">{guest.name}</div>
-                      <div className="flex w-3/5 flex-row items-center justify-end">
+                      <div className="w-1/2">{guest.name}</div>
+                      <div className="flex w-1/2 flex-row items-center justify-end">
                         <label className="w-1/2 px-1">
                           <input
                             key={eventGuest?.id}
@@ -111,7 +114,7 @@ const RsvpForm = (props: {
                             value={Status.ATTENDING}
                             className="peer sr-only absolute h-0 w-0"
                           />
-                          <div className="rounded-lg border border-stone-100 py-2 px-1 text-center text-sm uppercase peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
+                          <div className="rounded-lg border border-stone-100 py-2 px-1 text-center text-xs uppercase peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
                             Going
                           </div>
                         </label>
@@ -125,7 +128,7 @@ const RsvpForm = (props: {
                             value={Status.NOTATTENDING}
                             className="peer sr-only absolute h-0 w-0"
                           />
-                          <div className="rounded-lg border border-stone-100 px-1 py-2 text-center text-sm uppercase peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
+                          <div className="rounded-lg border border-stone-100 px-1 py-2 text-center text-xs uppercase peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
                             Not Going
                           </div>
                         </label>
@@ -139,33 +142,39 @@ const RsvpForm = (props: {
                 <div>
                   <div className="text-justify italic">
                     There will be a bus available to and from {event.venue.name}
-                    . The bus will depart from 277 Broadway to{" "}
+                    . The bus will depart from 277 Broadway, Newmarket to{" "}
                     {event.venue.name} at 4pm. It will leave {event.venue.name}{" "}
-                    at 12pm and drop everyone off back at 277 Broadway. Please
+                    at 12pm and drop everyone back at 277 Broadway. Please
                     indicate below those that would like to take the bus so we
                     can book a slot for you
                   </div>
 
-                  <div className="mt-8 flex w-full flex-row flex-wrap">
+                  <div className="mt-8 flex w-full flex-col">
                     {event.guests.map((guest, guestIndex) => {
                       const eventGuest = fields.fields
                         .find((e) => e.id === event.id)
                         ?.guests.find((g) => g.id === guest.id);
 
                       return (
-                        <label className="w-1/2" key={guest.id}>
-                          <input
-                            key={eventGuest?.id}
-                            {...register(
-                              `events.${eventIndex}.guests.${guestIndex}.requiresTransport`
+                        <div
+                          className="w-100 my-2 flex flex-row items-center justify-between"
+                          key={guest.id}
+                        >
+                          <Label className="w-3/5">{guest.name}</Label>
+                          <Controller
+                            control={control}
+                            name={`events.${eventIndex}.guests.${guestIndex}.requiresTransport`}
+                            render={({ field }) => (
+                              <Checkbox
+                                className="aspect-square h-6 w-6  data-[state='checked']:bg-stone-100 data-[state='checked']:text-[#8A9587]"
+                                {...field}
+                                value={undefined}
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
                             )}
-                            type="checkbox"
-                            className="peer hidden"
                           />
-                          <div className="border-bg-stone-100 my-2 mx-2 w-[95%] rounded-lg border p-2 text-center text-sm peer-checked:bg-stone-100 peer-checked:text-[#8A9587]">
-                            {guest.name}
-                          </div>
-                        </label>
+                        </div>
                       );
                     })}
                   </div>

@@ -148,6 +148,7 @@ export const invitationRouter = createTRPCRouter({
           id: ctx.invitationId
         },
         select: {
+          hasRsvpd : true,
           events: {
             include: {
               venue: true,
@@ -164,7 +165,10 @@ export const invitationRouter = createTRPCRouter({
         }
       })?.sort((a, b) => a.date.getTime() - b.date.getTime())
 
-      return events ?? []
+      return {
+        ...invitationWithEvents,
+        events: events ?? []
+      }
     }),
   rsvp: protectedProcedure
     .input(z.object({
@@ -182,7 +186,7 @@ export const invitationRouter = createTRPCRouter({
         for (const guest of event.guests) {
           console.log(guest);
 
-          await prisma.guestEventStatus.update({
+          await ctx.prisma.guestEventStatus.update({
             where: {
               guestId_eventId: {eventId: event.id, guestId: guest.id}
             },
@@ -193,6 +197,15 @@ export const invitationRouter = createTRPCRouter({
           })
         }
       }
+
+      await ctx.prisma.invitation.update({
+        where: {
+          id: ctx.invitationId
+        },
+        data: {
+          hasRsvpd: true
+        }
+      });
     }),
   all: publicProcedure
     .query(async ({ctx}) => {

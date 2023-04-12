@@ -41,6 +41,7 @@ model Event {
 model Invitation {
     id          String  @id @default(cuid())
     addressedTo String
+    hasRsvpd    Boolean @default(false)
     events      Event[]
     guests      Guest[]
 }
