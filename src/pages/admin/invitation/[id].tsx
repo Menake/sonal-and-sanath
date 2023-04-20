@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useRouter } from "next/router";
-import { ReactElement, useRef } from "react";
+import type { ReactElement } from "react";
+import { useRef } from "react";
 import { InvitationForm } from "../../../components/invitationForm";
 import AdminLayout from "../../../components/layouts/admin";
 import type { RouterOutputs } from "../../../utils/api";
@@ -27,8 +28,8 @@ function InvitationFormWrapper({ invitationId }: { invitationId: string }) {
 
   const { data } = api.invitation.get.useQuery(invitationId);
   const { mutate, isLoading } = api.invitation.update.useMutation({
-    async onSuccess(input) {
-      await utils.invitation.get.invalidate(input.id);
+    onSuccess: async (input, { id }) => {
+      await utils.invitation.get.invalidate(id);
       await router.push("/admin");
     },
   });

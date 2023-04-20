@@ -14,6 +14,7 @@ export const eventsRouter = createTRPCRouter({
       select: {
         events: {
           select: {
+            id: true,
             name: true,
             date: true,
             venue: {

@@ -1,7 +1,9 @@
+import { Status } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { prisma } from "../../db";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const invitationRouter = createTRPCRouter({
   create: publicProcedure
@@ -10,18 +12,36 @@ export const invitationRouter = createTRPCRouter({
       events: z.array(z.string()),
       guests: z.array(z.object({name: z.string()}))
     }))  
-  .mutation(({ ctx, input}) => {
-    return ctx.prisma.invitation.create({
+  .mutation(async ({ ctx, input}) => {
+    const invitation = await ctx.prisma.invitation.create({
         data: {
             addressedTo: input.addressedTo,
             events: {
                 connect: input.events.map(eventId => ({id: eventId}))
             },
             guests: {
-                create: input.guests.map(guest => ({ name: guest.name}))
+              create: input.guests.map(guest => ({ name: guest.name }))
             }
+        },
+        include: {
+          guests: true,
+          events: true
         }
-    })
+    });
+
+    for (const guest of invitation.guests) {
+      const guestEvents = invitation.events.map(event => ({ eventId: event.id, status: Status.NORESPONSE}))
+      await ctx.prisma.guest.update({
+        where: {
+          id: guest.id,
+        },
+        data: {
+          eventStatus: {
+            create: guestEvents
+          }
+        }
+      })
+    }
   }),
   update: publicProcedure
     .input(z.object({
@@ -30,8 +50,8 @@ export const invitationRouter = createTRPCRouter({
         events: z.array(z.string()),
         guests: z.array(z.object({name: z.string()}))
     }))  
-  .mutation(({ ctx, input}) => {    
-    return ctx.prisma.invitation.update({
+  .mutation(async ({ ctx, input}) => {    
+    const invitation = await ctx.prisma.invitation.update({
       where: {
         id: input.id
       },
@@ -45,10 +65,28 @@ export const invitationRouter = createTRPCRouter({
           deleteMany: {},
           create: input.guests.map(guest => ({name: guest.name}))
         }
+      },
+      include: {
+        guests: true,
+        events: true
       }
     });
+
+    for (const guest of invitation.guests) {
+      const guestEvents = invitation.events.map(event => ({ eventId: event.id, status: Status.NORESPONSE}))
+      await ctx.prisma.guest.update({
+        where: {
+          id: guest.id,
+        },
+        data: {
+          eventStatus: {
+            create: guestEvents
+          }
+        }
+      })
+    }
   }),
-  get: publicProcedure
+  get: protectedProcedure
     .input(z.string())
     .query(async ({ctx, input}) => {
       const invitation = await ctx.prisma.invitation.findUnique({
@@ -60,7 +98,8 @@ export const invitationRouter = createTRPCRouter({
           addressedTo: true,
           guests: {
             select: {
-              name: true
+              name: true,
+              status: true
             }
           },
           events: {
@@ -76,6 +115,97 @@ export const invitationRouter = createTRPCRouter({
         ...invitation,
         events: invitation.events.map(event => event.id)
       };
+    }),
+  getRsvp: protectedProcedure
+    .query(async ({ctx}) => {
+      const guestsWithStatuses = await ctx.prisma.guest.findMany({
+        where: {
+          invitationId: ctx.invitationId,
+        },
+        select: {
+          id: true,
+          name: true,
+          eventStatus: {
+            select: {
+              status: true,
+              eventId: true,
+              requiresTransport: true,
+            }
+          }
+        }
+      });
+
+      const guestStatuses = guestsWithStatuses.flatMap(guest => {
+        return guest.eventStatus.map(status => ({
+          ...status,
+          id: guest.id,
+          name: guest.name
+        }))
+      });
+
+      const invitationWithEvents = await ctx.prisma.invitation.findUnique({
+        where: {
+          id: ctx.invitationId
+        },
+        select: {
+          hasRsvpd : true,
+          events: {
+            include: {
+              venue: true,
+            }
+          }
+        }
+      })
+
+      const events = invitationWithEvents?.events?.map(event => {
+        const guests = guestStatuses.filter(status => status.eventId === event.id);
+        return {
+          ...event,
+          guests
+        }
+      })?.sort((a, b) => a.date.getTime() - b.date.getTime())
+
+      return {
+        ...invitationWithEvents,
+        events: events ?? []
+      }
+    }),
+  rsvp: protectedProcedure
+    .input(z.object({
+      events: z.array(z.object({
+        id: z.string(),
+        guests: z.array(z.object({ 
+          id: z.string(), 
+          status: z.nativeEnum(Status), 
+          requiresTransport: z.boolean()
+        })),
+      }))
+    }))
+    .mutation(async ({input, ctx}) => {
+      for (const event of input.events) {
+        for (const guest of event.guests) {
+          console.log(guest);
+
+          await ctx.prisma.guestEventStatus.update({
+            where: {
+              guestId_eventId: {eventId: event.id, guestId: guest.id}
+            },
+            data: {
+              status: guest.status,
+              requiresTransport: guest.requiresTransport
+            }
+          })
+        }
+      }
+
+      await ctx.prisma.invitation.update({
+        where: {
+          id: ctx.invitationId
+        },
+        data: {
+          hasRsvpd: true
+        }
+      });
     }),
   all: publicProcedure
     .query(async ({ctx}) => {

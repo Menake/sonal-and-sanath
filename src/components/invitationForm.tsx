@@ -52,7 +52,7 @@ export function InvitationForm({
           onSubmit={handleSubmit(onSubmit)}
           className="mt-8 flex w-full flex-1 flex-col pb-8"
         >
-          <label className="mt-3 text-[#8A9587] sm:flex sm:flex-col">
+          <label className="mt-3 text-[#8A9587]  sm:flex sm:flex-col">
             Addressed To
             <input
               defaultValue={data.addressedTo}
