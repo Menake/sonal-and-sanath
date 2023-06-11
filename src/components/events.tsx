@@ -1,14 +1,32 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { RouterOutputs } from "../utils/api";
+import { ResponseStage } from "@prisma/client";
 
 type Event = RouterOutputs["events"]["invited"][number];
 
+const getRsvpUrlFromResponseStage = (
+  invitationId: string,
+  stage: ResponseStage
+) => {
+  if (stage === "NORESPONSE" || stage === "HINDU_CEREMONY")
+    return `/rsvp/${invitationId}/ceremony`;
+
+  if (stage === "RECEPTION") return `/rsvp/${invitationId}/reception`;
+
+  if (stage === "RECEPTION_TRANSPORT")
+    return `/rsvp/${invitationId}/reception/transport`;
+
+  return `/rsvp/${invitationId}/ceremony`;
+};
+
 export const Events = ({
   events,
+  responseStage,
   invitationId,
 }: {
   events: Event[];
+  responseStage: ResponseStage;
   invitationId: string;
 }) => {
   const firstEvent = events[0];
@@ -76,10 +94,14 @@ export const Events = ({
 
       <button
         className="mt-16 w-full rounded border border-stone-100 py-2 px-5 italic text-stone-100"
-        onClick={() => void router.push(`rsvp/${invitationId}`)}
+        onClick={() => void router.push(`rsvp/${invitationId}/ceremony`)}
       >
         RSVP
       </button>
+
+      <Link href={getRsvpUrlFromResponseStage(invitationId, responseStage)}>
+        RSVP
+      </Link>
     </div>
   );
 };

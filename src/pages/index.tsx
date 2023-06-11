@@ -5,8 +5,7 @@ import { api } from "../utils/api";
 import { Separator } from "@/components/ui/separator";
 
 const Home: NextPage = () => {
-  const { data } = api.events.invited.useQuery();
-
+  const { data } = api.invitation.get.useQuery();
   const { session } = useSession();
 
   return (
@@ -33,7 +32,13 @@ const Home: NextPage = () => {
           </p>
         </div>
       </div>
-      {data && <Events events={data} invitationId={session.invitationId} />}
+      {data && (
+        <Events
+          events={data.events}
+          responseStage={data.responseStage!}
+          invitationId={session.invitationId}
+        />
+      )}
     </div>
   );
 };

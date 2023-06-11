@@ -17,6 +17,18 @@ enum Status {
     NORESPONSE
 }
 
+enum EventType {
+    HINDU_CEREMONY
+    PORUWA_AND_RECEPTION
+}
+
+enum ResponseStage {
+    HINDU_CEREMONY
+    RECEPTION
+    RECEPTION_TRANSPORT
+    RECEPTION_DIETARY
+}
+
 model Venue {
     id      String  @id @default(cuid())
     name    String
@@ -34,16 +46,19 @@ model Event {
     invitations        Invitation[]
     guestStatus        GuestEventStatus[]
     transportAvailable Boolean            @default(false)
+    eventType          EventType
+    rsvps              EventRsvp[]
 
     @@index([venueId])
 }
 
 model Invitation {
-    id          String  @id @default(cuid())
-    addressedTo String
-    hasRsvpd    Boolean @default(false)
-    events      Event[]
-    guests      Guest[]
+    id            String        @id @default(cuid())
+    addressedTo   String
+    responseStage ResponseStage @default(HINDU_CEREMONY)
+    events        Event[]
+    guests        Guest[]
+    rsvps         EventRsvp[]
 }
 
 model Guest {
@@ -53,6 +68,7 @@ model Guest {
     invitation   Invitation         @relation(fields: [invitationId], references: [id])
     invitationId String
     eventStatus  GuestEventStatus[]
+    rsvps        GuestRsvp[]
 
     @@index([invitationId])
 }
@@ -70,4 +86,36 @@ model GuestEventStatus {
     @@id([guestId, eventId])
     @@index([guestId])
     @@index([eventId])
+}
+
+model EventRsvp {
+    id String @id @default(cuid())
+
+    invitation   Invitation @relation(fields: [invitationId], references: [id])
+    invitationId String
+
+    eventId String
+    event   Event       @relation(fields: [eventId], references: [id])
+    guests  GuestRsvp[]
+
+    transportSeats           Int     @default(0)
+    transportPickupLocation  String?
+    transportDropOffLocation String?
+
+    @@index([eventId])
+    @@index([invitationId])
+}
+
+model GuestRsvp {
+    guestId String
+    guest   Guest  @relation(fields: [guestId], references: [id])
+
+    eventRsvpId String
+    eventRsvp   EventRsvp @relation(fields: [eventRsvpId], references: [id])
+
+    status Status @default(NORESPONSE)
+
+    @@id([guestId, eventRsvpId])
+    @@index([eventRsvpId])
+    @@index([guestId])
 }
