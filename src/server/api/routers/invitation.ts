@@ -63,23 +63,31 @@ export const invitationRouter = createTRPCRouter({
         guests: {
           deleteMany: {},
           create: input.guests.map(guest => ({name: guest.name}))
+        },
+        rsvps: {
+          deleteMany: {},
+          create: input.events.map(eventId => ({
+            eventId: eventId
+          })) 
         }
       },
       include: {
         guests: true,
-        events: true
+        events: true,
+        rsvps: true
       }
     });
 
-    for (const guest of invitation.guests) {
-      const guestEvents = invitation.events.map(event => ({ eventId: event.id, status: Status.NORESPONSE}))
-      await ctx.prisma.guest.update({
+    for (const guest of invitation.rsvps) {
+      await ctx.prisma.eventRsvp.update({
         where: {
           id: guest.id,
         },
         data: {
-          eventStatus: {
-            create: guestEvents
+          guests: {
+            create: invitation.guests.map(guest => ({
+              guestId: guest.id
+            }))
           }
         }
       })

@@ -25,7 +25,7 @@ const Home: NextPage = () => {
           <div className="-ml-1.5 mt-10 sm:m-0">SANATH</div>
         </div>
         <div className="mb-24 flex h-1/4 w-full flex-col items-end justify-end border-r border-stone-100">
-          <p className="sm:text-md w-3/4 pr-5 text-right text-sm italic text-stone-100 sm:w-1/2 md:w-1/3">
+          <p className="sm:text-md w-3/4 pr-5 text-right text-sm italic text-stone-100 sm:w-1/2 md:w-1/3 md:text-lg">
             Thank you for being part of of our journey thus far. We would love
             to have you join us as we start this new chapter of our lives
             together.

@@ -9,8 +9,7 @@ const getRsvpUrlFromResponseStage = (
   invitationId: string,
   stage: ResponseStage
 ) => {
-  if (stage === "NORESPONSE" || stage === "HINDU_CEREMONY")
-    return `/rsvp/${invitationId}/ceremony`;
+  if (stage === "HINDU_CEREMONY") return `/rsvp/${invitationId}/ceremony`;
 
   if (stage === "RECEPTION") return `/rsvp/${invitationId}/reception`;
 
@@ -92,15 +91,12 @@ export const Events = ({
         </div>
       )}
 
-      <button
-        className="mt-16 w-full rounded border border-stone-100 py-2 px-5 italic text-stone-100"
-        onClick={() => void router.push(`rsvp/${invitationId}/ceremony`)}
+      <Link
+        className="ml-5 mt-16 text-xl"
+        href={getRsvpUrlFromResponseStage(invitationId, responseStage)}
       >
         RSVP
-      </button>
-
-      <Link href={getRsvpUrlFromResponseStage(invitationId, responseStage)}>
-        RSVP
+        <span className="ml-3">{`->  `}</span>
       </Link>
     </div>
   );
