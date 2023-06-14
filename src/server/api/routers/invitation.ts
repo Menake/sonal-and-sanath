@@ -1,4 +1,3 @@
-import { Status, EventType, ResponseStage } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -20,23 +19,28 @@ export const invitationRouter = createTRPCRouter({
             },
             guests: {
               create: input.guests.map(guest => ({ name: guest.name }))
+            },
+            rsvps: {
+              create: input.events.map(eventId => ({ eventId}))
             }
         },
         include: {
           guests: true,
-          events: true
+          events: true,
+          rsvps: true
         }
     });
 
-    for (const guest of invitation.guests) {
-      const guestEvents = invitation.events.map(event => ({ eventId: event.id, status: Status.NORESPONSE}))
-      await ctx.prisma.guest.update({
+    for (const rsvp of invitation.rsvps) {
+      await ctx.prisma.eventRsvp.update({
         where: {
-          id: guest.id,
+          id: rsvp.id,
         },
         data: {
-          eventStatus: {
-            create: guestEvents
+          guests: {
+            create: invitation.guests.map(guest => ({
+              guestId: guest.id
+            }))
           }
         }
       })
@@ -78,10 +82,10 @@ export const invitationRouter = createTRPCRouter({
       }
     });
 
-    for (const guest of invitation.rsvps) {
+    for (const rsvp of invitation.rsvps) {
       await ctx.prisma.eventRsvp.update({
         where: {
-          id: guest.id,
+          id: rsvp.id,
         },
         data: {
           guests: {
@@ -135,6 +139,7 @@ export const invitationRouter = createTRPCRouter({
               id: true,
               name: true,
               date: true,
+              eventType: true,
               venue: {
                 select: {
                   name: true,

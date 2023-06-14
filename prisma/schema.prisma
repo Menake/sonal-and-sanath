@@ -23,6 +23,7 @@ enum EventType {
 }
 
 enum ResponseStage {
+    NORESPONSE
     HINDU_CEREMONY
     RECEPTION
     RECEPTION_TRANSPORT
@@ -54,7 +55,7 @@ model Event {
 model Invitation {
     id            String        @id @default(cuid())
     addressedTo   String
-    responseStage ResponseStage @default(HINDU_CEREMONY)
+    responseStage ResponseStage @default(NORESPONSE)
     events        Event[]
     guests        Guest[]
     rsvps         EventRsvp[]

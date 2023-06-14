@@ -5,7 +5,6 @@ import { Loader } from "../../../../components/loader";
 import type { RouterInputs, RouterOutputs } from "../../../../utils/api";
 import { api } from "../../../../utils/api";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/router";
 import { Separator } from "@/components/ui/separator";
+import { RsvpFooter } from "@/components/rsvp-footer";
 
 type EventRsvp = RouterOutputs["rsvp"]["get"];
 type RsvpResponse = RouterInputs["rsvp"]["update"];
@@ -120,13 +120,13 @@ const RsvpForm = (props: {
                         className="flex w-full flex-row space-y-1"
                       >
                         <FormItem className="flex w-full items-center space-x-3 space-y-0">
-                          <FormLabel>Going</FormLabel>
+                          <FormLabel>Attending</FormLabel>
                           <FormControl>
                             <RadioGroupItem value={Status.ATTENDING} />
                           </FormControl>
                         </FormItem>
                         <FormItem className="flex w-full items-center space-x-3 space-y-0">
-                          <FormLabel>Not Going</FormLabel>
+                          <FormLabel>Not Attending</FormLabel>
                           <FormControl>
                             <RadioGroupItem value={Status.NOTATTENDING} />
                           </FormControl>
@@ -144,21 +144,7 @@ const RsvpForm = (props: {
         <div className="flex flex-1" />
 
         <div className="mb-10">
-          {props.rsvp?.hasMultipleRsvps ? (
-            <div>
-              <Button variant="outline" type="submit" className="w-full">
-                Next
-              </Button>
-              <div className="mt-5 w-full text-center">Page 2 of 3</div>
-            </div>
-          ) : (
-            <div>
-              <Button variant="outline" type="submit" className="w-full">
-                Next
-              </Button>
-              <div className="mt-5 w-full text-center">Page 1 of 2</div>
-            </div>
-          )}
+          <RsvpFooter pageType="RECEPTION" />
         </div>
       </form>
     </Form>

@@ -10,39 +10,38 @@ export const rsvpRouter = createTRPCRouter({
         .query(async ({input, ctx}) => {
         const invitation = await ctx.prisma.invitation.findUnique({
             where: {
-            id: ctx.invitationId
+                id: ctx.invitationId,
             },
             select: {
-            rsvps: {
-                include: {
-                event: {
+                rsvps: {
+                    include: {
+                        event: {
+                        include: {
+                        venue: true
+                        }
+                    },
+                    guests: {
+                        include: {
+                        guest: true
+                        }
+                    }
+                    }
+                },
+                events: {
                     include: {
                     venue: true
                     }
                 },
                 guests: {
-                    include: {
-                    guest: true
+                    select: {
+                    id: true,
+                    name: true
                     }
                 }
-                }
-            },
-            events: {
-                include: {
-                venue: true
-                }
-            },
-            guests: {
-                select: {
-                id: true,
-                name: true
-                }
-            }
             }
         })
 
         const eventRsvp = invitation?.rsvps.find(rsvp => rsvp.event.eventType === input);
-        const hasMultipleRsvps = invitation?.events?.length && invitation?.events.length > 1;
 
         if (!eventRsvp) {
             const guests = invitation?.guests.map(guest => ({
@@ -61,8 +60,7 @@ export const rsvpRouter = createTRPCRouter({
                 venue: event.venue.name,
                 address: event.venue.address,
             },
-            guests: guests ?? [],
-            hasMultipleRsvps
+            guests: guests ?? []
             }
         }
 
@@ -79,8 +77,7 @@ export const rsvpRouter = createTRPCRouter({
             venue: eventRsvp.event.venue.name,
             address: eventRsvp.event.venue.address
             },
-            guests: guests ?? [],
-            hasMultipleRsvps
+            guests: guests ?? []
         }
         }),
     update: protectedProcedure

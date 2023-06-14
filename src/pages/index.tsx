@@ -1,13 +1,8 @@
 import { type NextPage } from "next";
 import { Events } from "../components/events";
-import { useSession } from "../SessionProvider";
-import { api } from "../utils/api";
 import { Separator } from "@/components/ui/separator";
 
 const Home: NextPage = () => {
-  const { data } = api.invitation.get.useQuery();
-  const { session } = useSession();
-
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex h-screen w-full flex-col justify-between sm:items-center">
@@ -32,13 +27,7 @@ const Home: NextPage = () => {
           </p>
         </div>
       </div>
-      {data && (
-        <Events
-          events={data.events}
-          responseStage={data.responseStage!}
-          invitationId={session.invitationId}
-        />
-      )}
+      <Events />
     </div>
   );
 };

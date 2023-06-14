@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { RouterOutputs } from "../utils/api";
 import { ResponseStage } from "@prisma/client";
+import { useInvitation } from "@/invitationProvider";
 
 type Event = RouterOutputs["events"]["invited"][number];
 
@@ -19,42 +20,39 @@ const getRsvpUrlFromResponseStage = (
   return `/rsvp/${invitationId}/ceremony`;
 };
 
-export const Events = ({
-  events,
-  responseStage,
-  invitationId,
-}: {
-  events: Event[];
-  responseStage: ResponseStage;
-  invitationId: string;
-}) => {
-  const firstEvent = events[0];
-  const secondEvent = events[1];
+export const Events = () => {
+  const invitation = useInvitation();
 
-  const router = useRouter();
+  const hinduCeremony = invitation.events.find(
+    (e) => e.eventType === "HINDU_CEREMONY"
+  );
+
+  const reception = invitation.events.find(
+    (e) => e.eventType === "PORUWA_AND_RECEPTION"
+  );
 
   return (
     <div className="mb-16 flex w-full flex-col justify-between sm:justify-center ">
-      {firstEvent && (
+      {hinduCeremony && (
         <div className="mt-16 w-full border-l border-stone-100 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10 lg:w-1/4">
           <div className="text-xl uppercase italic text-white sm:text-xl">
-            {firstEvent.name}
+            {hinduCeremony.name}
           </div>
           <div className="mt-5 italic text-stone-100">
-            {firstEvent.venue.name}
+            {hinduCeremony.venue.name}
           </div>
           <div className="italic text-stone-100">
-            {firstEvent.venue.address}
+            {hinduCeremony.venue.address}
           </div>
           <div className="italic text-stone-100">
             <span>
-              {firstEvent.date.toLocaleDateString("en-nz", {
+              {hinduCeremony.date.toLocaleDateString("en-nz", {
                 dateStyle: "long",
               })}
             </span>
             <span className="mx-2">-</span>
             <span>
-              {firstEvent.date.toLocaleTimeString("en-nz", {
+              {hinduCeremony.date.toLocaleTimeString("en-nz", {
                 timeStyle: "short",
               })}
             </span>
@@ -62,27 +60,27 @@ export const Events = ({
         </div>
       )}
 
-      {secondEvent && (
+      {reception && (
         <div className="mt-8 flex items-end justify-end">
           <div className="mt-16 w-3/4 border-r border-stone-100 pt-16 pr-5 text-white sm:w-1/2 sm:pr-10 lg:w-1/4">
             <div className="text-right text-xl uppercase  italic text-white sm:text-xl">
-              {secondEvent.name}
+              {reception.name}
             </div>
             <div className="mt-5 text-right italic text-stone-100">
-              {secondEvent.venue.name}
+              {reception.venue.name}
             </div>
             <div className="text-right italic text-stone-100">
-              {secondEvent.venue.address}
+              {reception.venue.address}
             </div>
             <div className="text-right italic text-stone-100">
               <span>
-                {secondEvent.date.toLocaleDateString("en-nz", {
+                {reception.date.toLocaleDateString("en-nz", {
                   dateStyle: "long",
                 })}
               </span>
               <span className="mx-2">-</span>
               <span>
-                {secondEvent.date.toLocaleTimeString("en-nz", {
+                {reception.date.toLocaleTimeString("en-nz", {
                   timeStyle: "short",
                 })}
               </span>
@@ -93,7 +91,10 @@ export const Events = ({
 
       <Link
         className="ml-5 mt-16 text-xl"
-        href={getRsvpUrlFromResponseStage(invitationId, responseStage)}
+        href={getRsvpUrlFromResponseStage(
+          invitation.id,
+          invitation.responseStage
+        )}
       >
         RSVP
         <span className="ml-3">{`->  `}</span>

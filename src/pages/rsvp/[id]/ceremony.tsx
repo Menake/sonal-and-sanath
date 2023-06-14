@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/router";
 import { Separator } from "@/components/ui/separator";
+import { RsvpFooter } from "@/components/rsvp-footer";
 
 type EventRsvp = RouterOutputs["rsvp"]["get"];
 type RsvpResponse = RouterInputs["rsvp"]["update"];
@@ -27,8 +28,6 @@ const HinduCeremonyRsvp: NextPage = () => {
 
   const utils = api.useContext();
   const router = useRouter();
-
-  const hasMultipleRsvps = data && data.hasMultipleRsvps;
 
   const invitationId = router.query.id as string;
 
@@ -41,10 +40,7 @@ const HinduCeremonyRsvp: NextPage = () => {
     });
 
     await utils.rsvp.get.invalidate();
-
-    if (hasMultipleRsvps) {
-      void router.push(`/rsvp/${invitationId}/reception`);
-    }
+    void router.push(`/rsvp/${invitationId}/reception`);
   };
 
   if (isLoading) return <Loader />;
@@ -148,18 +144,7 @@ const RsvpForm = (props: {
         <div className="flex flex-1" />
 
         <div className="mb-10">
-          {props.rsvp?.hasMultipleRsvps ? (
-            <div>
-              <Button variant="outline" type="submit" className="w-full">
-                Next
-              </Button>
-              <div className="mt-5 w-full text-center">Page 1 of 3</div>
-            </div>
-          ) : (
-            <Button variant="outline" type="submit" className="w-full">
-              Submit
-            </Button>
-          )}
+          <RsvpFooter pageType="HINDU_CEREMONY" />
         </div>
       </form>
     </Form>
