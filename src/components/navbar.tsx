@@ -4,7 +4,7 @@ import { Navigation } from "./navigation";
 import { MenuToggle } from "./navigation/toggle";
 import { MenuItem } from "./navigation/menu-item";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSession } from "../SessionProvider";
+import { useSession } from "../session-provider";
 import { useRouter } from "next/router";
 
 const sidebar = {

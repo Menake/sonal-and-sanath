@@ -8,8 +8,8 @@ import { Baskervville } from "@next/font/google";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
-import { SessionProvider } from "../SessionProvider";
-import { InvitationProvider } from "@/invitationProvider";
+import { SessionProvider } from "../session-provider";
+import { InvitationProvider } from "@/invitation-provider";
 
 const baskervville = Baskervville({
   subsets: ["latin"],

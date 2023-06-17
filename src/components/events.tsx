@@ -1,10 +1,6 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
-import type { RouterOutputs } from "../utils/api";
-import { ResponseStage } from "@prisma/client";
-import { useInvitation } from "@/invitationProvider";
-
-type Event = RouterOutputs["events"]["invited"][number];
+import type { ResponseStage } from "@prisma/client";
+import { useInvitation } from "@/invitation-provider";
 
 const getRsvpUrlFromResponseStage = (
   invitationId: string,

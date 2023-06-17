@@ -1,4 +1,4 @@
-import { useInvitation } from "@/invitationProvider";
+import { useInvitation } from "@/invitation-provider";
 import { Button } from "./ui/button";
 import { useRouter } from "next/router";
 

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Loader } from "../components/loader";
-import { useSession } from "../SessionProvider";
+import { useSession } from "../session-provider";
 import type { RouterInputs } from "../utils/api";
 import { api } from "../utils/api";
 

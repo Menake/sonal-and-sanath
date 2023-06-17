@@ -19,12 +19,10 @@ const Home: NextPage = () => {
           </div>
           <div className="-ml-1.5 mt-10 sm:m-0">SANATH</div>
         </div>
-        {/* <div className="mb-24 flex h-1/4 w-full flex-col items-end justify-end border-r bsorder-stone-100"> */}
         <blockquote className="mt-6 justify-end border-r pt-16 pr-6 text-right text-sm italic sm:float-right">
           Thank you for being part of of our journey thus far. We would love to
           have you join us as we start this new chapter of our lives together.
         </blockquote>
-        {/* </div> */}
       </div>
       <Events />
     </div>
