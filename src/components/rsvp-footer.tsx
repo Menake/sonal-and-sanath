@@ -2,14 +2,14 @@ import { useInvitation } from "@/invitationProvider";
 import { Button } from "./ui/button";
 import { useRouter } from "next/router";
 
-type RsvpPage = "HINDU_CEREMONY" | "RECEPTION" | "TRANSPORT";
+export type RsvpPage = "HINDU_CEREMONY" | "RECEPTION" | "TRANSPORT";
 
 export const RsvpFooter = ({ pageType }: { pageType: RsvpPage }) => {
   const { id, events } = useInvitation();
   const router = useRouter();
 
   const proceedButtonText =
-    events.length > 1 && pageType !== "TRANSPORT" ? "Next" : "Submit";
+    events.length > 1 && pageType !== "TRANSPORT" ? "Continue" : "Submit";
 
   let currentPage = 1;
 

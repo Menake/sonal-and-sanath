@@ -1,10 +1,9 @@
 import type { NextPage } from "next";
 import { useForm } from "react-hook-form";
 import { Loader } from "../../../../components/loader";
-import type { RouterInputs, RouterOutputs } from "../../../../utils/api";
+import type { RouterOutputs } from "../../../../utils/api";
 import { api } from "../../../../utils/api";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -23,9 +22,18 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { RsvpFooter } from "@/components/rsvp-footer";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type Event = RouterOutputs["rsvp"]["transport"];
-type TransportResponse = RouterInputs["rsvp"]["updateTransport"];
+
+const transportFormSchema = z.object({
+  numberOfSeats: z.string(),
+  pickupLocation: z.string().nullable(),
+  dropOffLocation: z.string().nullable(),
+});
+
+type FormSchema = z.infer<typeof transportFormSchema>;
 
 const TransportPage: NextPage = () => {
   const { data, isLoading } = api.rsvp.transport.useQuery();
@@ -33,12 +41,13 @@ const TransportPage: NextPage = () => {
   const utils = api.useContext();
   const router = useRouter();
 
-  const invitationId = router.query.id as string;
-
   const { mutateAsync } = api.rsvp.updateTransport.useMutation();
 
-  const handleSubmit = async (data: TransportResponse) => {
-    await mutateAsync(data);
+  const handleSubmit = async (data: FormSchema) => {
+    await mutateAsync({
+      ...data,
+      numberOfSeats: parseInt(data.numberOfSeats),
+    });
     await utils.rsvp.transport.invalidate();
     void router.push(`/`);
   };
@@ -52,9 +61,10 @@ const TransportPage: NextPage = () => {
 
 const TransportForm = (props: {
   event: Event;
-  onSubmit: (data: TransportResponse) => Promise<void>;
+  onSubmit: (data: FormSchema) => Promise<void>;
 }) => {
-  const form = useForm<TransportResponse>({
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(transportFormSchema),
     defaultValues: {
       numberOfSeats: props.event.numberOfSeats.toString(),
       pickupLocation: props.event.pickupLocation,
@@ -111,7 +121,7 @@ const TransportForm = (props: {
                     setShowLocations(parseInt(value) > 0);
                     field.onChange(value);
                   }}
-                  defaultValue={field.value}
+                  defaultValue={field.value.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -121,8 +131,8 @@ const TransportForm = (props: {
                   <SelectContent>
                     {[...Array(props.event.numberOfGuests + 1).keys()].map(
                       (number) => (
-                        <SelectItem key={number} value={number.toString()}>
-                          {number}
+                        <SelectItem key={number + 1} value={number.toString()}>
+                          {number.toString()}
                         </SelectItem>
                       )
                     )}

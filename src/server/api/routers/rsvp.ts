@@ -206,7 +206,7 @@ export const rsvpRouter = createTRPCRouter({
     }),
     updateTransport: protectedProcedure
         .input(z.object({
-            numberOfSeats: z.string(),
+            numberOfSeats: z.number(),
             pickupLocation: z.string().nullable(),
             dropOffLocation: z.string().nullable()
         }))
