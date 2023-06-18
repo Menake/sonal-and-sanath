@@ -30,7 +30,7 @@ const ReceptionRsvp: NextPage = () => {
     void router.push(`/rsvp/${invitationId}/reception/transport`);
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader spinnerColour="bg-stone-100" />;
 
   return <RsvpForm rsvp={data} onSubmit={handleSubmit} pageType="RECEPTION" />;
 };

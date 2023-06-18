@@ -28,7 +28,7 @@ const HinduCeremonyRsvp: NextPage = () => {
     next();
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader spinnerColour="bg-stone-100" />;
 
   return <RsvpForm rsvp={data} onSubmit={handleSubmit} pageType={pageType} />;
 };

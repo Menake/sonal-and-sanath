@@ -55,7 +55,7 @@ const TransportPage: NextPage = () => {
     next();
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader spinnerColour="bg-stone-100" />;
 
   if (!data) return null;
 
