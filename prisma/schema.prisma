@@ -38,16 +38,17 @@ model Venue {
 }
 
 model Event {
-    id                 String       @id @default(cuid())
+    id                 String             @id @default(cuid())
     name               String
     date               DateTime
-    venue              Venue        @relation(fields: [venueId], references: [id])
+    venue              Venue              @relation(fields: [venueId], references: [id])
     venueId            String
     dressCode          String
     invitations        Invitation[]
-    transportAvailable Boolean      @default(false)
+    transportAvailable Boolean            @default(false)
     eventType          EventType
     rsvps              EventRsvp[]
+    guestStatus        GuestEventStatus[]
 
     @@index([venueId])
 }
@@ -62,12 +63,13 @@ model Invitation {
 }
 
 model Guest {
-    id           String      @id @default(cuid())
+    id           String             @id @default(cuid())
     name         String
-    status       Status      @default(NORESPONSE)
-    invitation   Invitation  @relation(fields: [invitationId], references: [id])
+    status       Status             @default(NORESPONSE)
+    invitation   Invitation         @relation(fields: [invitationId], references: [id])
     invitationId String
     rsvps        GuestRsvp[]
+    statuses     GuestEventStatus[]
 
     @@index([invitationId])
 }
@@ -102,4 +104,17 @@ model GuestRsvp {
     @@id([guestId, eventRsvpId])
     @@index([eventRsvpId])
     @@index([guestId])
+}
+
+model GuestEventStatus {
+    guestId           String
+    guest             Guest   @relation(fields: [guestId], references: [id])
+    eventId           String
+    event             Event   @relation(fields: [eventId], references: [id])
+    status            Status  @default(NORESPONSE)
+    requiresTransport Boolean @default(false)
+
+    @@id([guestId, eventId])
+    @@index([guestId])
+    @@index([eventId])
 }

@@ -35,9 +35,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
           className={`min-w-screen flex h-full min-h-screen flex-1 flex-col items-center justify-center bg-[#8A9587] px-5 ${baskervville.variable}`}
         >
           <Navbar />
-          <InvitationProvider>
-            <div className="z-10 flex w-full flex-1 pt-3">{page}</div>
-          </InvitationProvider>
+          <InvitationProvider>{page}</InvitationProvider>
         </main>
       );
     });

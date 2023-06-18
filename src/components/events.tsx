@@ -1,100 +1,100 @@
 import Link from "next/link";
-import type { ResponseStage } from "@prisma/client";
+import type { Invitation } from "@/invitation-provider";
 import { useInvitation } from "@/invitation-provider";
+import { ArrowRight } from "lucide-react";
 
-const getRsvpUrlFromResponseStage = (
-  invitationId: string,
-  stage: ResponseStage
-) => {
-  if (stage === "HINDU_CEREMONY") return `/rsvp/${invitationId}/ceremony`;
+const getRsvpUrlFromResponseStage = (invitation: Invitation) => {
+  if (!invitation.id) return "";
 
-  if (stage === "RECEPTION") return `/rsvp/${invitationId}/reception`;
+  const firstEvent = invitation.events[0];
 
-  if (stage === "RECEPTION_TRANSPORT")
-    return `/rsvp/${invitationId}/reception/transport`;
+  if (invitation.responseStage === "NORESPONSE")
+    return firstEvent?.eventType === "HINDU_CEREMONY"
+      ? `/rsvp/${invitation.id}/ceremony`
+      : `/rsvp/${invitation.id}/reception`;
 
-  return `/rsvp/${invitationId}/ceremony`;
+  if (invitation.responseStage === "HINDU_CEREMONY")
+    return invitation.events.length > 1
+      ? `/rsvp/${invitation.id}/reception`
+      : `/rsvp/${invitation.id}/ceremony`;
+
+  if (invitation.responseStage === "RECEPTION")
+    return `/rsvp/${invitation.id}/reception/transport`;
+
+  return `/rsvp/${invitation.id}/reception/transport`;
 };
 
 export const Events = () => {
   const invitation = useInvitation();
 
-  const hinduCeremony = invitation.events.find(
-    (e) => e.eventType === "HINDU_CEREMONY"
-  );
-
-  const reception = invitation.events.find(
-    (e) => e.eventType === "PORUWA_AND_RECEPTION"
-  );
+  const firstEvent = invitation.events[0];
+  const secondEvent = invitation.events[1];
 
   return (
-    <div className="mb-16 flex w-full flex-col justify-between sm:justify-center ">
-      {hinduCeremony && (
-        <div className="mt-16 w-full border-l border-stone-100 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10 lg:w-1/4">
-          <div className="text-xl uppercase italic text-white sm:text-xl">
-            {hinduCeremony.name}
+    <div className="flex w-full flex-col justify-between italic sm:justify-center">
+      {firstEvent && (
+        <div className="my-20 w-full border-l border-stone-100 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10">
+          <div className="text-xl uppercase text-white sm:text-2xl">
+            {firstEvent.name}
           </div>
-          <div className="mt-5 italic text-stone-100">
-            {hinduCeremony.venue.name}
+          <div className="mt-5 ">{firstEvent.venue.name}</div>
+          <div>
+            {firstEvent.date.toLocaleDateString("en-nz", {
+              day: "numeric",
+              weekday: "long",
+              month: "long",
+              year: "numeric",
+            })}
           </div>
-          <div className="italic text-stone-100">
-            {hinduCeremony.venue.address}
+          <div>
+            {firstEvent.date.toLocaleTimeString("en-nz", {
+              timeStyle: "short",
+            })}
           </div>
-          <div className="italic text-stone-100">
-            <span>
-              {hinduCeremony.date.toLocaleDateString("en-nz", {
-                dateStyle: "long",
+
+          <div>{firstEvent.dressCode}</div>
+        </div>
+      )}
+
+      {secondEvent && (
+        <div className="my-20 flex items-end justify-end text-right">
+          <div className="mt-16 w-3/4 border-r border-stone-100 pt-16 pr-5 sm:w-1/2 sm:pr-10">
+            <div className="text-xl uppercase sm:text-2xl">
+              {secondEvent.name}
+            </div>
+            <div className="mt-5">{secondEvent.venue.name}</div>
+            <div>
+              {secondEvent.date.toLocaleDateString("en-nz", {
+                day: "numeric",
+                weekday: "long",
+                month: "long",
+                year: "numeric",
               })}
-            </span>
-            <span className="mx-2">-</span>
-            <span>
-              {hinduCeremony.date.toLocaleTimeString("en-nz", {
+            </div>
+            <div>
+              {secondEvent.date.toLocaleTimeString("en-nz", {
                 timeStyle: "short",
               })}
-            </span>
+            </div>
+
+            <div>{secondEvent.dressCode}</div>
           </div>
         </div>
       )}
 
-      {reception && (
-        <div className="mt-8 flex items-end justify-end">
-          <div className="mt-16 w-3/4 border-r border-stone-100 pt-16 pr-5 text-white sm:w-1/2 sm:pr-10 lg:w-1/4">
-            <div className="text-right text-xl uppercase  italic text-white sm:text-xl">
-              {reception.name}
-            </div>
-            <div className="mt-5 text-right italic text-stone-100">
-              {reception.venue.name}
-            </div>
-            <div className="text-right italic text-stone-100">
-              {reception.venue.address}
-            </div>
-            <div className="text-right italic text-stone-100">
-              <span>
-                {reception.date.toLocaleDateString("en-nz", {
-                  dateStyle: "long",
-                })}
-              </span>
-              <span className="mx-2">-</span>
-              <span>
-                {reception.date.toLocaleTimeString("en-nz", {
-                  timeStyle: "short",
-                })}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <Link
-        className="ml-5 mt-16 text-xl"
-        href={getRsvpUrlFromResponseStage(
-          invitation.id,
-          invitation.responseStage
-        )}
+      <div
+        className={`my-8 ml-5 flex flex-row  ${
+          invitation.events.length > 1 ? "justify-start" : "justify-end"
+        }`}
       >
-        RSVP
-        <span className="ml-3">{`->  `}</span>
-      </Link>
+        <Link
+          className="flex flex-row text-xl sm:text-2xl"
+          href={getRsvpUrlFromResponseStage(invitation)}
+        >
+          RSVP
+          <ArrowRight className="ml-2" />
+        </Link>
+      </div>
     </div>
   );
 };

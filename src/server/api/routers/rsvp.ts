@@ -190,8 +190,6 @@ export const rsvpRouter = createTRPCRouter({
 
         const poruwaEvent = invitation?.rsvps[0];
 
-        console.log(poruwaEvent);
-
         if (!poruwaEvent) 
             throw new TRPCError({ code: "NOT_FOUND"})
 
@@ -230,15 +228,14 @@ export const rsvpRouter = createTRPCRouter({
 
             if (!poruwaEvent) return;
 
-
             await ctx.prisma.eventRsvp.update({
                 where: {
                     id: poruwaEvent.id
                 },
                 data: {
-                    transportSeats: Number(input.numberOfSeats),
-                    transportPickupLocation: input.pickupLocation,
-                    transportDropOffLocation: input.dropOffLocation
+                    transportSeats: input.numberOfSeats,
+                    transportPickupLocation: input.numberOfSeats > 0 ? input.pickupLocation : null,
+                    transportDropOffLocation: input.numberOfSeats > 0 ? input.dropOffLocation : null
                 }
             })
         })

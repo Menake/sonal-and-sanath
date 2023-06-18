@@ -10,18 +10,11 @@ import { api } from "./utils/api";
 import { Loader } from "./components/loader";
 import { useSession } from "./session-provider";
 
-type Invitation = RouterOutputs["invitation"]["get"];
+export type Invitation = RouterOutputs["invitation"]["get"] & { id: string };
+export type InvitationEvent = Invitation["events"][number];
 
 export type InvitationContext = {
-  invitation: Invitation & { id: string };
-};
-
-const defaultInvitation = {
-  invitation: {
-    id: "",
-    events: [],
-    responseStage: "NORESPONSE",
-  },
+  invitation: Invitation;
 };
 
 const InvitationContext = createContext<InvitationContext>({
@@ -44,13 +37,13 @@ export const InvitationProvider = ({ children }: { children: ReactNode }) => {
           invitation: { id: "", events: [], responseStage: "NORESPONSE" },
         }}
       >
-        {children}
+        <div className="z-10 flex w-full flex-1 pt-3">{children}</div>
       </InvitationContext.Provider>
     );
 
   return (
     <AuthenticatedSessionProvider invitationId={session.invitationId}>
-      {children}
+      <div className="z-10 flex w-full flex-1 pt-3">{children}</div>
     </AuthenticatedSessionProvider>
   );
 };
@@ -64,7 +57,12 @@ const AuthenticatedSessionProvider = ({
 }) => {
   const { data, isLoading } = api.invitation.get.useQuery();
 
-  if (isLoading) return <Loader />;
+  if (isLoading)
+    return (
+      <div className="z-10 flex w-full flex-1 pt-3">
+        <Loader spinnerColour="text-stone-100" />
+      </div>
+    );
 
   if (!data) return null;
 

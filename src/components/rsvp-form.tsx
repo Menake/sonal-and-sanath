@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import type { RsvpPage } from "@/components/rsvp-footer";
 import { RsvpFooter } from "@/components/rsvp-footer";
+import { useRsvpNavigation } from "@/hooks/use-rsvp-navigation";
 
 type EventRsvp = RouterOutputs["rsvp"]["get"];
 type RsvpResponse = RouterInputs["rsvp"]["update"];
@@ -30,6 +31,8 @@ export const RsvpForm = (props: {
     },
   });
 
+  const { next } = useRsvpNavigation(props.pageType);
+
   if (!props.rsvp) return null;
 
   return (
@@ -38,7 +41,7 @@ export const RsvpForm = (props: {
         <form
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={form.handleSubmit(props.onSubmit)}
-          className="flex min-h-full w-full flex-col justify-evenly sm:h-3/4 sm:min-h-max sm:w-3/4 md:w-1/2"
+          className="flex min-h-full w-full flex-col justify-evenly sm:w-3/4 md:w-1/2"
         >
           <div className="flex flex-col items-center justify-center">
             <h1 className="mt-2 text-center text-xl uppercase">
@@ -139,7 +142,10 @@ export const RsvpForm = (props: {
           <div className="flex flex-1" />
 
           <div className="mb-10">
-            <RsvpFooter pageType={props.pageType} />
+            <RsvpFooter
+              pageType={props.pageType}
+              isSubmitting={form.formState.isSubmitting}
+            />
           </div>
         </form>
       </div>

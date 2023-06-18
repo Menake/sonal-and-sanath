@@ -73,7 +73,8 @@ export const invitationRouter = createTRPCRouter({
           create: input.events.map(eventId => ({
             eventId: eventId
           })) 
-        }
+        },
+        responseStage: "NORESPONSE"
       },
       include: {
         guests: true,
@@ -140,6 +141,7 @@ export const invitationRouter = createTRPCRouter({
               name: true,
               date: true,
               eventType: true,
+              dressCode: true,
               venue: {
                 select: {
                   name: true,
@@ -153,7 +155,10 @@ export const invitationRouter = createTRPCRouter({
       });
 
       if (!invitation) throw new TRPCError({code: "NOT_FOUND"});
-      return invitation;
+      return {
+        ...invitation,
+        events: invitation.events.sort((a, b) => a.date.getTime() - b.date.getTime())
+      };
     }),
   all: publicProcedure
     .query(async ({ctx}) => {
