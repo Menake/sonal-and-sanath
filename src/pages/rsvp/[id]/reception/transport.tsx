@@ -40,9 +40,8 @@ const TransportPage: NextPage = () => {
   const { data, isLoading } = api.rsvp.transport.useQuery();
 
   const utils = api.useContext();
-  const pageType = "TRANSPORT" as RsvpPage;
 
-  const { next } = useRsvpNavigation(pageType);
+  const { next } = useRsvpNavigation("TRANSPORT");
 
   const { mutateAsync } = api.rsvp.updateTransport.useMutation();
 
@@ -51,7 +50,9 @@ const TransportPage: NextPage = () => {
       ...data,
       numberOfSeats: parseInt(data.numberOfSeats),
     });
+
     await utils.rsvp.transport.invalidate();
+    await utils.invitation.get.invalidate();
     next();
   };
 

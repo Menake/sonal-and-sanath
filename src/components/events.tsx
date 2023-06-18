@@ -33,7 +33,7 @@ export const Events = () => {
   return (
     <div className="flex w-full flex-col justify-between italic sm:justify-center">
       {firstEvent && (
-        <div className="my-20 w-full border-l border-stone-100 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10">
+        <div className="my-8 w-full border-l border-stone-100 pt-3 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10">
           <div className="text-xl uppercase text-white sm:text-2xl">
             {firstEvent.name}
           </div>
@@ -57,8 +57,8 @@ export const Events = () => {
       )}
 
       {secondEvent && (
-        <div className="my-20 flex items-end justify-end text-right">
-          <div className="mt-16 w-3/4 border-r border-stone-100 pt-16 pr-5 sm:w-1/2 sm:pr-10">
+        <div className="my-8 flex items-end justify-end text-right">
+          <div className="w-3/4 border-r border-stone-100 pb-3 pt-16 pr-5 sm:w-1/2 sm:pr-10">
             <div className="text-xl uppercase sm:text-2xl">
               {secondEvent.name}
             </div>

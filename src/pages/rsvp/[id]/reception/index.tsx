@@ -4,8 +4,8 @@ import { Loader } from "@/components/loader";
 import type { RouterInputs } from "../../../../utils/api";
 import { api } from "../../../../utils/api";
 
-import { useRouter } from "next/router";
 import { RsvpForm } from "@/components/rsvp-form";
+import { useRsvpNavigation } from "@/hooks/use-rsvp-navigation";
 
 type RsvpResponse = RouterInputs["rsvp"]["update"];
 
@@ -15,9 +15,9 @@ const ReceptionRsvp: NextPage = () => {
   );
 
   const utils = api.useContext();
-  const router = useRouter();
+  const pageType = "RECEPTION";
 
-  const invitationId = router.query.id as string;
+  const { next } = useRsvpNavigation(pageType);
 
   const { mutateAsync } = api.rsvp.update.useMutation();
 
@@ -27,12 +27,15 @@ const ReceptionRsvp: NextPage = () => {
       eventType: "PORUWA_AND_RECEPTION",
     });
     await utils.rsvp.get.invalidate();
-    void router.push(`/rsvp/${invitationId}/reception/transport`);
+
+    await utils.invitation.get.invalidate();
+
+    next();
   };
 
   if (isLoading) return <Loader spinnerColour="bg-stone-100" />;
 
-  return <RsvpForm rsvp={data} onSubmit={handleSubmit} pageType="RECEPTION" />;
+  return <RsvpForm rsvp={data} onSubmit={handleSubmit} pageType={pageType} />;
 };
 
 export default ReceptionRsvp;

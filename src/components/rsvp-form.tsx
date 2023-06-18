@@ -31,8 +31,6 @@ export const RsvpForm = (props: {
     },
   });
 
-  const { next } = useRsvpNavigation(props.pageType);
-
   if (!props.rsvp) return null;
 
   return (

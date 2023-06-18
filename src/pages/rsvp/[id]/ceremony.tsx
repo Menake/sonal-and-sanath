@@ -25,6 +25,7 @@ const HinduCeremonyRsvp: NextPage = () => {
     });
 
     await utils.rsvp.get.invalidate();
+    await utils.invitation.get.invalidate();
     next();
   };
 

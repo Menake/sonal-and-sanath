@@ -5,8 +5,8 @@ import { Separator } from "@/components/ui/separator";
 const Home: NextPage = () => {
   return (
     <div className="flex w-full flex-1 flex-col justify-between">
-      <div className="flex h-1/4 flex-col items-center justify-center px-5">
-        <div>
+      <div className="flex h-1/4 w-full flex-col px-5 text-justify sm:items-center sm:justify-center">
+        <div className="w-full">
           <div className="justify mt-8 w-full text-lg italic text-stone-100">
             You are invited to celebrate the wedding of
           </div>
@@ -22,7 +22,7 @@ const Home: NextPage = () => {
           <div className="-ml-26 -mt-3 text-right sm:m-0">SANATH</div>
         </div>
       </div>
-      <blockquote className="mt-6 w-2/3 justify-end self-end border-r pr-6 pt-16 text-right text-sm md:w-1/4 md:text-base">
+      <blockquote className="mb-16 w-3/4 justify-end self-end border-r pb-4 pr-6 pt-16 text-right italic md:w-1/4">
         Thank you for being part of of our journey thus far. We would love to
         have you join us as we start this new chapter of our lives together.
       </blockquote>

@@ -7,13 +7,15 @@ export const useRsvpNavigation = (page: RsvpPage) => {
   const router = useRouter();
 
   const next = () => {
+    let url = "/";
+
     if (page === "HINDU_CEREMONY" && invitation.events.length > 1)
-      void router.push(`/rsvp/${invitation.id}/reception`);
+      url = `/rsvp/${invitation.id}/reception`;
 
     if (page === "RECEPTION")
-      void router.push(`/rsvp/${invitation.id}/reception/transport`);
+      url = `/rsvp/${invitation.id}/reception/transport`;
 
-    void router.push("/");
+    void router.push(url);
   };
 
   const previous = () => {
