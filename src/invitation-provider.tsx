@@ -60,7 +60,7 @@ const AuthenticatedSessionProvider = ({
   if (isLoading)
     return (
       <div className="z-10 flex w-full flex-1 pt-3">
-        <Loader spinnerColour="text-stone-100" />
+        <Loader spinnerColour="bg-stone-100" />
       </div>
     );
 
