@@ -45,28 +45,7 @@ export const rsvpRouter = createTRPCRouter({
         (rsvp) => rsvp.event.eventType === input
       );
 
-      if (!eventRsvp) {
-        const guests = invitation?.guests.map((guest) => ({
-          id: guest.id,
-          name: guest.name,
-          status: Status.NORESPONSE,
-        }));
-
-        const event = invitation?.events.find(
-          (event) => event.eventType === input
-        );
-        if (!event) return;
-
-        return {
-          event: {
-            name: event.name,
-            date: event.date,
-            venue: event.venue.name,
-            address: event.venue.address,
-          },
-          guests: guests ?? [],
-        };
-      }
+      if (!eventRsvp) throw new TRPCError({ code: "NOT_FOUND" });
 
       const guests = eventRsvp.guests.map((guestRsvp) => ({
         id: guestRsvp.guestId,

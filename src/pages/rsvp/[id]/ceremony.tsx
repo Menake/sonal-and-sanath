@@ -31,6 +31,13 @@ const HinduCeremonyRsvp: NextPage = () => {
 
   if (isLoading) return <Loader spinnerColour="bg-stone-100" />;
 
+  if (!data)
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        No event found for for rsvp
+      </div>
+    );
+
   return <RsvpForm rsvp={data} onSubmit={handleSubmit} pageType={pageType} />;
 };
 
