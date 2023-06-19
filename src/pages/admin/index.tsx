@@ -6,6 +6,8 @@ import AdminLayout from "../../components/layouts/admin";
 import { Loader } from "../../components/loader";
 import type { RouterOutputs } from "../../utils/api";
 import { api } from "../../utils/api";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 type Invitation = RouterOutputs["invitation"]["all"]["invitations"][number];
 
@@ -75,6 +77,14 @@ export default function AdminPage() {
     },
   });
 
+  const { mutateAsync, isLoading: isUpdpating } =
+    api.invitation.resetRsvps.useMutation();
+
+  const resetRsvps = async () => {
+    console.log("resetting");
+    await mutateAsync();
+  };
+
   if (isLoading)
     return (
       <div className="flex items-center justify-center">
@@ -84,6 +94,25 @@ export default function AdminPage() {
 
   return (
     <div className="flex w-full flex-col">
+      <div className="my-6 w-full sm:w-1/2">
+        {isUpdpating ? (
+          <Button variant="outline" type="submit" className="w-full">
+            <div className="animate-spin border-solid border-current">
+              <Loader2 />
+            </div>
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={resetRsvps}
+            variant="outline"
+            className="w-full text-[#8A9587]"
+          >
+            Reset RSVPs
+          </Button>
+        )}
+      </div>
+
       <div className="flex w-full flex-row items-center justify-between">
         <input
           className="w-4/5 rounded bg-[#8A9587] bg-opacity-20 px-3 py-2 font-thin text-[#8A9587] text-opacity-80 placeholder-[#8A9587] placeholder-opacity-80 focus:outline-[#8A9587]"
