@@ -77,11 +77,11 @@ model Guest {
 model EventRsvp {
     id String @id @default(cuid())
 
-    invitation   Invitation @relation(fields: [invitationId], references: [id])
+    invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
     invitationId String
 
     eventId String
-    event   Event       @relation(fields: [eventId], references: [id])
+    event   Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
     guests  GuestRsvp[]
 
     transportSeats           Int     @default(0)
@@ -94,10 +94,10 @@ model EventRsvp {
 
 model GuestRsvp {
     guestId String
-    guest   Guest  @relation(fields: [guestId], references: [id])
+    guest   Guest  @relation(fields: [guestId], references: [id], onDelete: Cascade)
 
     eventRsvpId String
-    eventRsvp   EventRsvp @relation(fields: [eventRsvpId], references: [id])
+    eventRsvp   EventRsvp @relation(fields: [eventRsvpId], references: [id], onDelete: Cascade)
 
     status Status @default(NORESPONSE)
 

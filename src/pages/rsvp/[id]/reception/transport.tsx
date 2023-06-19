@@ -166,11 +166,11 @@ const TransportForm = (props: {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="Pakuranga">
+                          Pakuranga - Pickup 15:00
+                        </SelectItem>
                         <SelectItem value="Newmarket">
                           Newmarket - Pickup 15:30
-                        </SelectItem>
-                        <SelectItem value="Pakuranga">
-                          Pakuranga - Pickup 16:00
                         </SelectItem>
                       </SelectContent>
                     </Select>
