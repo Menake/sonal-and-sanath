@@ -2,6 +2,7 @@ import { createTRPCRouter } from "./trpc";
 import { eventsRouter } from "./routers/events";
 import { invitationRouter } from "./routers/invitation";
 import { authRouter } from "./routers/auth";
+import { rsvpRouter } from "./routers/rsvp";
 
 /**
  * This is the primary router for your server.
@@ -11,6 +12,7 @@ import { authRouter } from "./routers/auth";
 export const appRouter = createTRPCRouter({
   events: eventsRouter,
   invitation: invitationRouter,
+  rsvp: rsvpRouter,
   auth: authRouter
 });
 

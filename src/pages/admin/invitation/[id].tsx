@@ -10,7 +10,7 @@ import { env } from "../../../env.mjs";
 
 import { useQRCode } from "next-qrcode";
 
-type Invitation = RouterOutputs["invitation"]["get"];
+type Invitation = RouterOutputs["invitation"]["getForAdmin"];
 
 export default function Invitation() {
   const router = useRouter();
@@ -26,10 +26,11 @@ function InvitationFormWrapper({ invitationId }: { invitationId: string }) {
 
   const utils = api.useContext();
 
-  const { data } = api.invitation.get.useQuery(invitationId);
+  const { data } = api.invitation.getForAdmin.useQuery(invitationId);
   const { mutate, isLoading } = api.invitation.update.useMutation({
     onSuccess: async (input, { id }) => {
-      await utils.invitation.get.invalidate(id);
+      await utils.invitation.getForAdmin.invalidate(id);
+      await utils.invitation.get.invalidate();
       await router.push("/admin");
     },
   });

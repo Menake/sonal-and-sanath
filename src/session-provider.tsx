@@ -37,15 +37,12 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data, isFetched } = useQuery(["session"], () => {
+  const { data: session, isFetched } = useQuery(["session"], () => {
     const sessionString = localStorage.getItem("session");
 
-    if (!sessionString) return null;
+    if (!sessionString) return undefined;
 
-    const session = JSON.parse(sessionString || "{}") as Session;
-    return {
-      session,
-    };
+    return JSON.parse(sessionString) as Session;
   });
 
   const setSession = async (session: Session) => {
@@ -59,16 +56,17 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   };
 
   if (isFetched) {
-    if (data?.session && router.pathname === "/login") void router.push("/");
+    if (session?.invitationId && router.pathname === "/login")
+      void router.push("/");
 
-    if (!data?.session && router.pathname !== "/login")
+    if (!session?.invitationId && router.pathname !== "/login")
       void router.push("/login");
   }
 
   return (
     <SessionContext.Provider
       value={{
-        session: data?.session || defaultSession,
+        session: session || defaultSession,
         setSession,
         clearSession,
       }}

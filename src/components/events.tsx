@@ -1,85 +1,100 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
-import type { RouterOutputs } from "../utils/api";
+import type { Invitation } from "@/invitation-provider";
+import { useInvitation } from "@/invitation-provider";
+import { ArrowRight } from "lucide-react";
 
-type Event = RouterOutputs["events"]["invited"][number];
+const getRsvpUrlFromResponseStage = (invitation: Invitation) => {
+  if (!invitation.id) return "";
 
-export const Events = ({
-  events,
-  invitationId,
-}: {
-  events: Event[];
-  invitationId: string;
-}) => {
-  const firstEvent = events[0];
-  const secondEvent = events[1];
+  const firstEvent = invitation.events[0];
 
-  const router = useRouter();
+  if (invitation.responseStage === "NORESPONSE")
+    return firstEvent?.eventType === "HINDU_CEREMONY"
+      ? `/rsvp/${invitation.id}/ceremony`
+      : `/rsvp/${invitation.id}/reception`;
+
+  if (invitation.responseStage === "HINDU_CEREMONY")
+    return invitation.events.length > 1
+      ? `/rsvp/${invitation.id}/reception`
+      : `/rsvp/${invitation.id}/ceremony`;
+
+  if (invitation.responseStage === "RECEPTION")
+    return `/rsvp/${invitation.id}/reception/transport`;
+
+  return `/rsvp/${invitation.id}/reception/transport`;
+};
+
+export const Events = () => {
+  const invitation = useInvitation();
+
+  const firstEvent = invitation.events[0];
+  const secondEvent = invitation.events[1];
 
   return (
-    <div className="mb-16 flex w-full flex-col justify-between sm:justify-center ">
+    <div className="flex w-full flex-col justify-between italic sm:justify-center">
       {firstEvent && (
-        <div className="mt-16 w-full border-l border-stone-100 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10 lg:w-1/4">
-          <div className="text-xl uppercase italic text-white sm:text-xl">
+        <div className="my-8 w-full border-l border-stone-100 pt-3 pb-16 pl-5 text-white sm:w-1/2 sm:pl-10">
+          <div className="text-xl uppercase text-white sm:text-2xl">
             {firstEvent.name}
           </div>
-          <div className="mt-5 italic text-stone-100">
-            {firstEvent.venue.name}
+          <div className="mt-5 ">{firstEvent.venue.name}</div>
+          <div>
+            {firstEvent.date.toLocaleDateString("en-nz", {
+              day: "numeric",
+              weekday: "long",
+              month: "long",
+              year: "numeric",
+            })}
           </div>
-          <div className="italic text-stone-100">
-            {firstEvent.venue.address}
+          <div>
+            {firstEvent.date.toLocaleTimeString("en-nz", {
+              timeStyle: "short",
+            })}
           </div>
-          <div className="italic text-stone-100">
-            <span>
-              {firstEvent.date.toLocaleDateString("en-nz", {
-                dateStyle: "long",
-              })}
-            </span>
-            <span className="mx-2">-</span>
-            <span>
-              {firstEvent.date.toLocaleTimeString("en-nz", {
-                timeStyle: "short",
-              })}
-            </span>
-          </div>
+
+          <div>{firstEvent.dressCode}</div>
         </div>
       )}
 
       {secondEvent && (
-        <div className="mt-8 flex items-end justify-end">
-          <div className="mt-16 w-3/4 border-r border-stone-100 pt-16 pr-5 text-white sm:w-1/2 sm:pr-10 lg:w-1/4">
-            <div className="text-right text-xl uppercase  italic text-white sm:text-xl">
+        <div className="my-8 flex items-end justify-end text-right">
+          <div className="w-3/4 border-r border-stone-100 pb-3 pt-16 pr-5 sm:w-1/2 sm:pr-10">
+            <div className="text-xl uppercase sm:text-2xl">
               {secondEvent.name}
             </div>
-            <div className="mt-5 text-right italic text-stone-100">
-              {secondEvent.venue.name}
+            <div className="mt-5">{secondEvent.venue.name}</div>
+            <div>
+              {secondEvent.date.toLocaleDateString("en-nz", {
+                day: "numeric",
+                weekday: "long",
+                month: "long",
+                year: "numeric",
+              })}
             </div>
-            <div className="text-right italic text-stone-100">
-              {secondEvent.venue.address}
+            <div>
+              {secondEvent.date.toLocaleTimeString("en-nz", {
+                timeStyle: "short",
+              })}
             </div>
-            <div className="text-right italic text-stone-100">
-              <span>
-                {secondEvent.date.toLocaleDateString("en-nz", {
-                  dateStyle: "long",
-                })}
-              </span>
-              <span className="mx-2">-</span>
-              <span>
-                {secondEvent.date.toLocaleTimeString("en-nz", {
-                  timeStyle: "short",
-                })}
-              </span>
-            </div>
+
+            <div>{secondEvent.dressCode}</div>
           </div>
         </div>
       )}
 
-      <button
-        className="mt-16 w-full rounded border border-stone-100 py-2 px-5 italic text-stone-100"
-        onClick={() => void router.push(`rsvp/${invitationId}`)}
+      <div
+        className={`my-8 ml-5 flex flex-row  ${
+          invitation.events.length > 1 ? "justify-start" : "justify-end"
+        }`}
       >
-        RSVP
-      </button>
+        <Link
+          className="flex flex-row text-xl sm:text-2xl"
+          href={getRsvpUrlFromResponseStage(invitation)}
+        >
+          RSVP
+          <ArrowRight className="ml-2" />
+        </Link>
+      </div>
     </div>
   );
 };
