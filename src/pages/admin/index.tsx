@@ -6,8 +6,6 @@ import AdminLayout from "../../components/layouts/admin";
 import { Loader } from "../../components/loader";
 import type { RouterOutputs } from "../../utils/api";
 import { api } from "../../utils/api";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 
 type Invitation = RouterOutputs["invitation"]["all"]["invitations"][number];
 
