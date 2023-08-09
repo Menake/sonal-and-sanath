@@ -6,11 +6,11 @@ const Home: NextPage = () => {
   return (
     <div className="flex w-full flex-1 flex-col justify-between">
       <div className="flex h-1/4 w-full flex-col px-5 text-justify sm:items-center sm:justify-center">
-        <div className="w-full">
-          <div className="justify mt-8 w-full text-lg italic text-stone-100">
+        <div className="flex w-full flex-col items-center justify-center">
+          <div className="justify mt-8 w-full text-lg italic text-stone-100 sm:text-center">
             You are invited to celebrate the wedding of
           </div>
-          <Separator />
+          <Separator className="sm:w-1/3" />
         </div>
       </div>
       <div className="my-52 flex h-3/4 items-center justify-center text-5xl sm:text-6xl md:text-7xl">
@@ -27,6 +27,10 @@ const Home: NextPage = () => {
         have you join us as we start this new chapter of our lives together.
       </blockquote>
       <Events />
+      <div className="mx-5 mt-5 mb-10 italic sm:w-1/2 md:w-1/3">
+        Your presence to celebrate with us is more than enough, but if you wish
+        to honour us with a gift there will be a wishing well available.
+      </div>
     </div>
   );
 };
