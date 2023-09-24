@@ -46,11 +46,7 @@ export const Events = () => {
               year: "numeric",
             })}
           </div>
-          <div>
-            {firstEvent.date.toLocaleTimeString("en-nz", {
-              timeStyle: "short",
-            })}
-          </div>
+          <div>{firstEvent.time}</div>
 
           <div>{firstEvent.dressCode}</div>
         </div>
@@ -71,11 +67,7 @@ export const Events = () => {
                 year: "numeric",
               })}
             </div>
-            <div>
-              {secondEvent.date.toLocaleTimeString("en-nz", {
-                timeStyle: "short",
-              })}
-            </div>
+            <div>{secondEvent.time}</div>
 
             <div>{secondEvent.dressCode}</div>
           </div>

@@ -142,6 +142,7 @@ export const invitationRouter = createTRPCRouter({
           select: {
             id: true,
             name: true,
+            time: true,
             date: true,
             eventType: true,
             dressCode: true,

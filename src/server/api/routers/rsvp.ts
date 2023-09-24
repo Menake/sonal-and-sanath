@@ -57,6 +57,7 @@ export const rsvpRouter = createTRPCRouter({
         event: {
           name: eventRsvp.event.name,
           date: eventRsvp.event.date,
+          time: eventRsvp.event.time,
           venue: eventRsvp.event.venue.name,
           address: eventRsvp.event.venue.address,
         },

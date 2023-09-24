@@ -6,7 +6,7 @@ export const eventsRouter = createTRPCRouter({
   all: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.event.findMany();
   }),
-  invited: protectedProcedure.query(async ({ctx}) => {
+  invited: protectedProcedure.query(async ({ ctx }) => {
     const invitationWithEvents = await ctx.prisma.invitation.findUnique({
       where: {
         id: ctx.invitationId,
@@ -17,19 +17,23 @@ export const eventsRouter = createTRPCRouter({
             id: true,
             name: true,
             date: true,
+            time: true,
             venue: {
               select: {
                 name: true,
-                address: true
-              }
-            }
+                address: true,
+              },
+            },
           },
-        }
-      }
-    })
+        },
+      },
+    });
 
-    if (!invitationWithEvents) throw new TRPCError({code: "INTERNAL_SERVER_ERROR"});
+    if (!invitationWithEvents)
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-    return invitationWithEvents.events.sort((a, b) => a.date.getTime() - b.date.getTime());
-  })
+    return invitationWithEvents.events.sort(
+      (a, b) => a.date.getTime() - b.date.getTime()
+    );
+  }),
 });

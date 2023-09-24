@@ -54,11 +54,7 @@ export const RsvpForm = (props: {
                     dateStyle: "long",
                   })}
                 </span>
-                <span className="ml-2">
-                  {props.rsvp.event.date.toLocaleTimeString("en-nz", {
-                    timeStyle: "short",
-                  })}
-                </span>
+                <span className="ml-2">{props.rsvp.event.time}</span>
               </div>
             </div>
           </div>
