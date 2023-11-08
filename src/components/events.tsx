@@ -1,33 +1,9 @@
-import Link from "next/link";
-import type { Invitation } from "@/invitation-provider";
 import { useInvitation } from "@/invitation-provider";
-import { ArrowRight } from "lucide-react";
 import { api } from "@/utils/api";
-
-const getRsvpUrlFromResponseStage = (invitation: Invitation) => {
-  if (!invitation.id) return "";
-
-  const firstEvent = invitation.events[0];
-
-  if (invitation.responseStage === "NORESPONSE")
-    return firstEvent?.eventType === "HINDU_CEREMONY"
-      ? `/rsvp/${invitation.id}/ceremony`
-      : `/rsvp/${invitation.id}/reception`;
-
-  if (invitation.responseStage === "HINDU_CEREMONY")
-    return invitation.events.length > 1
-      ? `/rsvp/${invitation.id}/reception`
-      : `/rsvp/${invitation.id}/ceremony`;
-
-  if (invitation.responseStage === "RECEPTION")
-    return `/rsvp/${invitation.id}/reception/transport`;
-
-  return `/rsvp/${invitation.id}/reception/transport`;
-};
 
 export const Events = () => {
   const invitation = useInvitation();
-  const { data, isLoading } = api.rsvp.transport.useQuery();
+  const { data } = api.rsvp.transport.useQuery();
 
   const poruwaEvent = invitation.events.find(
     (event) => event.eventType === "PORUWA_AND_RECEPTION"
@@ -58,9 +34,10 @@ export const Events = () => {
       {data && data.numberOfSeats > 0 ? (
         <div className="mx-5 mb-10 mt-2 italic">
           <span>
-            You have indicated that you want to take one of the available buses
-            to Markovina Valley Estate. The timetable is below, please be on
-            time as a courtesy to other guests.
+            You have indicated that you would like to take one of the available
+            buses to Markovina Valley Estate. The timetable is below, please be
+            on time as a courtesy to other guests. We look forward to
+            celebrating with you!
           </span>
           <div className="mt-8 text-lg">To Markovina (arriving at 4pm)</div>
           <ul className="mt-1 px-5">
@@ -78,7 +55,7 @@ export const Events = () => {
           <span>
             You have indicated that you will not be needing the provided bus
             service. Parking is available on site at Markovina Valley Estate,
-            please drive safely and we can't wait to celebrate with you
+            please drive safely and we look forward to celebrating with you!
           </span>
         </div>
       )}
