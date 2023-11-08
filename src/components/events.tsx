@@ -41,8 +41,8 @@ export const Events = () => {
           </span>
           <div className="mt-8 text-lg">To Markovina (arriving at 4pm)</div>
           <ul className="mt-1 px-5">
-            <li>Leaving Pakuranga at 3:00pm</li>
-            <li>Leaving Newmarket at 3:30pm</li>
+            <li>Leaving Pakuranga at 2:50pm</li>
+            <li>Leaving Newmarket at 3:20pm</li>
           </ul>
           <div className="mt-6 text-lg">From Markovina (leaving at 12pm)</div>
           <ul className="mt-1 px-5">
