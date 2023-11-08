@@ -41,14 +41,12 @@ export const Events = () => {
           </span>
           <div className="mt-8 text-lg">To Markovina (arriving at 4pm)</div>
           <ul className="mt-1 px-5">
-            <li>Leaving Pakuranga at 2:50pm</li>
-            <li>Leaving Newmarket at 3:20pm</li>
+            <li>3 Chevis Place, Pakuranga - 2:50pm</li>
+            <li className="mt-4 sm:mt-0">
+              416 Broadway, Newmarket (Bus stop outside NZ Post) - 3:20pm
+            </li>
           </ul>
-          <div className="mt-6 text-lg">From Markovina (leaving at 12pm)</div>
-          <ul className="mt-1 px-5">
-            <li>Arriving at Newmarket</li>
-            <li>Arriving at Pakuranga</li>
-          </ul>
+          <div className="mt-6 text-lg">From Markovina (leaving at 12am)</div>
         </div>
       ) : (
         <div className="mx-5 mt-2 italic">
